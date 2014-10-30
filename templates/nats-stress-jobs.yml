@@ -1,0 +1,51 @@
+networks: (( merge ))
+
+meta:
+  environment: ~
+
+  release:
+    name: nats-stress
+
+  networks:
+    z1:
+      apps: nats1
+
+    z2:
+      apps: nats2
+
+  nats_templates:
+  - name: nats
+    release: (( meta.release.name ))
+
+jobs:
+  - name: nats_z1
+    templates: (( merge || meta.nats_templates ))
+    instances: 1
+    resource_pool: medium_z1
+    networks:
+      - name: nats1
+        static_ips: (( merge ))
+    properties:
+      networks: (( meta.networks.z1 ))
+
+  - name: nats_z2
+    templates: (( merge || meta.nats_templates ))
+    instances: 1
+    resource_pool: medium_z2
+    networks:
+      - name: nats2
+        static_ips: (( merge ))
+    properties:
+      networks: (( meta.networks.z2 ))
+
+properties:
+  nats:
+    user: (( merge ))
+    password: (( merge ))
+    address: (( jobs.nats_z1.networks.nats1.static_ips.[0] ))
+    port: 4222
+    machines: (( jobs.nats_z1.networks.nats1.static_ips jobs.nats_z2.networks.nats2.static_ips ))
+    debug: false
+    trace: false
+    monitor_port: 0
+    prof_port: 0
