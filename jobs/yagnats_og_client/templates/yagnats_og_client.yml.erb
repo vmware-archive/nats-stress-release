@@ -1,0 +1,13 @@
+---
+nats_servers:
+<% p("nats.machines").each do |address| %>
+- host: <%= address %>
+  port: <%= p("nats.port") %>
+  username: <%= p("nats.user") %>
+  password: <%= p("nats.password") %>
+<% end %>
+
+name: <%= "yagnats_og_client_" + spec.index.to_s %> 
+publish_interval_in_seconds: <%= p('yagnats_og_client.publish_interval_in_seconds') %>
+payload_size_in_bytes: <%= p('yagnats_og_client.payload_size_in_bytes') %>
+

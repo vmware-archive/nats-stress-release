@@ -1,0 +1,4 @@
+set -e
+
+cp -R yagnats_og_client ${BOSH_INSTALL_TARGET}
+

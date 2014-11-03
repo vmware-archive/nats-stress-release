@@ -1,0 +1,5 @@
+check process yagnats_og_client
+  with pidfile /var/vcap/sys/run/yagnats_og_client/yagnats_og_client.pid
+  start program "/var/vcap/jobs/yagnats_og_client/bin/yagnats_og_client_ctl start"
+  stop program "/var/vcap/jobs/yagnats_og_client/bin/yagnats_og_client_ctl stop"
+  group vcap

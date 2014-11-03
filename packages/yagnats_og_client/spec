@@ -1,0 +1,6 @@
+---
+name: yagnats_og_client
+dependencies:
+- golang1.3
+files:
+- yagnats_og_client/**/*

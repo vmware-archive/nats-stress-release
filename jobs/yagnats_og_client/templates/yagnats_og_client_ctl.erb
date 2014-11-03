@@ -1,0 +1,44 @@
+#!/bin/bash
+
+RUN_DIR=/var/vcap/sys/run/yagnats_og_client
+PIDFILE=$RUN_DIR/yagnats_og_client.pid
+PACKAGE_DIR=/var/vcap/packages/yagnats_og_client
+JOB_DIR=/var/vcap/jobs/yagnats_og_client
+LOG_DIR=/var/vcap/sys/log/yagnats_og_client
+
+export CONFIG_DIR=$JOB_DIR/config
+export YAGNATS_OG_CLIENT_CONFIG_FILE=$CONFIG_DIR/yagnats_og_client.yml
+export GOROOT=/var/vcap/packages/golang1.3
+export GOPATH=$PACKAGE_DIR/yagnats_og_client/vendor
+
+source /var/vcap/packages/common/utils.sh
+
+case $1 in
+  start)
+    pid_guard $PIDFILE "yagnats og client"
+
+    mkdir -p $RUN_DIR
+    mkdir -p $LOG_DIR
+
+    chown vcap:vcap $RUN_DIR
+    chown vcap:vcap $LOG_DIR
+
+    PATH=$GOROOT/bin:$PATH
+
+    echo $$ > $PIDFILE
+    chown vcap:vcap $PIDFILE
+
+    exec chpst -u vcap:vcap go run $PACKAGE_DIR/yagnats_og_client/main.go -c $YAGNATS_OG_CLIENT_CONFIG_FILE
+
+    ;;
+
+  stop)
+    kill_and_wait $PIDFILE
+
+    ;;
+
+  *)
+    echo "Usage: yagnats_og_client_ctl {start|stop}"
+
+    ;;
+esac
