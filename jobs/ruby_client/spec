@@ -1,0 +1,24 @@
+---
+name: ruby_client
+packages:
+  - ruby-2.1.3
+  - common
+  - ruby_client
+templates:
+  ruby_client_ctl.erb: bin/ruby_client_ctl
+  ruby_client.yml.erb: config/ruby_client.yml
+properties:
+  ruby_client.payload_size_in_bytes: 
+    default: 1
+    description: Additional number of bytes to include in the payload
+  ruby_client.publish_interval_in_seconds: 
+    default: 0.5
+    description: seconds between requests
+  nats.machines:
+    description: location of nats servers
+  nats.port:
+    description: the port of the nats servers
+  nats.user:
+    description: the nats user
+  nats.password:
+    description: the nats password

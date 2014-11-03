@@ -1,0 +1,5 @@
+check process ruby_client
+  with pidfile /var/vcap/sys/run/ruby_client/ruby_client.pid
+  start program "/var/vcap/jobs/ruby_client/bin/ruby_client_ctl start"
+  stop program "/var/vcap/jobs/ruby_client/bin/ruby_client_ctl stop"
+  group vcap

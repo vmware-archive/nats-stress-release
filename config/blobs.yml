@@ -4,3 +4,23 @@ golang/go1.3.1.linux-amd64.tar.gz:
   sha: !binary |-
     M2FmMDExY2MxOWIyMWM3MTgwZjI2MDRmZDg1ZmJjNGRkZGU5NzE0Mw==
   size: 51930765
+ruby-2.1.3/bundler-1.7.3.gem:
+  object_id: fd833de3-d0e2-43fc-af75-38d75f8cb41f
+  sha: !binary |-
+    NjE4ZmRmNzZmMzVlODczZTQ5MGUxNWNkYWM4N2JlN2Y3MjQ3ZjgxYg==
+  size: 299520
+ruby-2.1.3/ruby-2.1.3.tar.gz:
+  object_id: df27cf77-2ba6-448b-84f1-097ace41872a
+  sha: !binary |-
+    Y2E2ZTEyMGU1YTJlZTdkZWIzYTc0OTM2OTZiNWJiYzI4YmZjMjIzNg==
+  size: 15129183
+ruby-2.1.3/rubygems-2.4.2.tgz:
+  object_id: 2abfc785-80d9-41b4-85ec-78d89051ce57
+  sha: !binary |-
+    NTM4ZjdhMjY0Nzk4Mzc3ZTVhNjMwNTZmOTc5YzQzZjQ0MTYxM2ZmMw==
+  size: 440555
+ruby-2.1.3/yaml-0.1.6.tar.gz:
+  object_id: 8e82e08a-ef83-46bd-bcd1-0a14392c7cf4
+  sha: !binary |-
+    ZjNkNDA0ZTExYmVjM2M0ZWZjZGRmZDE0YzQyZDQ2ZjFhYWJlMGI1ZA==
+  size: 503012

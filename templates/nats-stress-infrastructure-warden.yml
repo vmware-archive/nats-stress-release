@@ -25,10 +25,22 @@ jobs:
         static_ips: (( static_ips(1) ))
 
   - name: nats_z2
-    instances: 0
+    instances: 1
     networks:
       - name: nats2
         static_ips: (( static_ips(1) ))
+
+  - name: ruby_client_z1
+    instances: 1
+    networks:
+      - name: nats1
+        static_ips: (( static_ips(2) ))
+
+  - name: ruby_client_z2
+    instances: 1
+    networks:
+      - name: nats2
+        static_ips: (( static_ips(2) ))
 
 compilation:
   cloud_properties:

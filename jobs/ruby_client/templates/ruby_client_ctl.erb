@@ -1,0 +1,44 @@
+#!/bin/bash
+
+RUN_DIR=/var/vcap/sys/run/ruby_client
+PIDFILE=$RUN_DIR/ruby_client.pid
+PACKAGE_DIR=/var/vcap/packages/ruby_client
+JOB_DIR=/var/vcap/jobs/ruby_client
+LOG_DIR=/var/vcap/sys/log/ruby_client
+RUBY_DIR=/var/vcap/packages/ruby-2.1.3
+
+export CONFIG_DIR=$JOB_DIR/config
+export RUBY_CLIENT_CONFIG_DIR=$CONFIG_DIR/ruby_client.yml
+export BUNDLE_GEMFILE=/var/vcap/packages/ruby_client/ruby_client/Gemfile
+
+source /var/vcap/packages/common/utils.sh
+
+case $1 in
+  start)
+    pid_guard $PIDFILE "ruby client"
+
+    mkdir -p $RUN_DIR
+    mkdir -p $LOG_DIR
+
+    chown vcap:vcap $RUN_DIR
+    chown vcap:vcap $LOG_DIR
+
+    PATH=$RUBY_DIR/bin:$PATH
+
+    echo $$ > $PIDFILE
+    chown vcap:vcap $PIDFILE
+
+    exec chpst -u vcap:vcap bundle exec $PACKAGE_DIR/ruby_client/main.rb $CONFIG_DIR/ruby_client.yml 
+
+    ;;
+
+  stop)
+    kill_and_wait $PIDFILE
+
+    ;;
+
+  *)
+    echo "Usage: ruby_client_ctl {start|stop}"
+
+    ;;
+esac

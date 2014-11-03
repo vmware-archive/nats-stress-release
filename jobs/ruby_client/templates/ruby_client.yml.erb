@@ -1,0 +1,10 @@
+---
+nats_servers:
+<% p("nats.machines").each do |address| %>
+- nats://<%= p("nats.user") %>:<%= p("nats.password") %>@<%= address %>:<%= p("nats.port") %>
+<% end %>
+
+name: <%= "ruby_client_" + spec.index.to_s %> 
+publish_interval_in_seconds: <%= p('ruby_client.publish_interval_in_seconds') %>
+payload_size_in_bytes: <%= p('ruby_client.payload_size_in_bytes') %>
+
