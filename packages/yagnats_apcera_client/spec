@@ -1,0 +1,6 @@
+---
+name: yagnats_apcera_client
+dependencies:
+- golang1.3
+files:
+- yagnats_apcera_client/**/*

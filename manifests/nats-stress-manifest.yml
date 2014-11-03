@@ -84,6 +84,32 @@ jobs:
   templates:
   - name: yagnats_og_client
     release: nats-stress
+- instances: 1
+  name: yagnats_apcera_client_z1
+  networks:
+  - name: nats1
+    static_ips:
+    - 10.244.5.18
+  properties:
+    networks:
+      apps: nats1
+  resource_pool: medium_z1
+  templates:
+  - name: yagnats_apcera_client
+    release: nats-stress
+- instances: 1
+  name: yagnats_apcera_client_z2
+  networks:
+  - name: nats2
+    static_ips:
+    - 10.244.6.18
+  properties:
+    networks:
+      apps: nats2
+  resource_pool: medium_z2
+  templates:
+  - name: yagnats_apcera_client
+    release: nats-stress
 meta:
   environment: null
   releases:
@@ -951,7 +977,7 @@ resource_pools:
     name: random
   name: medium_z1
   network: nats1
-  size: 3
+  size: 4
   stemcell:
     name: bosh-warden-boshlite-ubuntu-trusty-go_agent
     version: latest
@@ -959,7 +985,7 @@ resource_pools:
     name: random
   name: medium_z2
   network: nats2
-  size: 3
+  size: 4
   stemcell:
     name: bosh-warden-boshlite-ubuntu-trusty-go_agent
     version: latest

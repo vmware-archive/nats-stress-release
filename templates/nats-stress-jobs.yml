@@ -25,6 +25,10 @@ meta:
   - name: yagnats_og_client
     release: (( meta.release.name ))
 
+  yagnats_apcera_client_templates:
+  - name: yagnats_apcera_client
+    release: (( meta.release.name ))
+
 jobs:
   - name: nats_z1
     templates: (( merge || meta.nats_templates ))
@@ -78,6 +82,26 @@ jobs:
 
   - name: yagnats_og_client_z2
     templates: (( merge || meta.yagnats_og_client_templates ))
+    instances: 1
+    resource_pool: medium_z2
+    networks:
+      - name: nats2
+        static_ips: (( merge ))
+    properties:
+      networks: (( meta.networks.z2 ))
+
+  - name: yagnats_apcera_client_z1
+    templates: (( merge || meta.yagnats_apcera_client_templates ))
+    instances: 1
+    resource_pool: medium_z1
+    networks:
+      - name: nats1
+        static_ips: (( merge ))
+    properties:
+      networks: (( meta.networks.z1 ))
+
+  - name: yagnats_apcera_client_z2
+    templates: (( merge || meta.yagnats_apcera_client_templates ))
     instances: 1
     resource_pool: medium_z2
     networks:

@@ -1,0 +1,24 @@
+---
+name: yagnats_apcera_client
+packages:
+  - golang1.3
+  - common
+  - yagnats_apcera_client
+templates:
+  yagnats_apcera_client_ctl.erb: bin/yagnats_apcera_client_ctl
+  yagnats_apcera_client.yml.erb: config/yagnats_apcera_client.yml
+properties:
+  yagnats_apcera_client.payload_size_in_bytes: 
+    default: 1
+    description: Number of bytes to include in the payload
+  yagnats_apcera_client.publish_interval_in_seconds: 
+    default: 1
+    description: seconds between requests
+  nats.machines:
+    description: location of nats servers
+  nats.port:
+    description: the port of the nats servers
+  nats.user:
+    description: the nats user
+  nats.password:
+    description: the nats password

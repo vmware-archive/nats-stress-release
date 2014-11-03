@@ -1,0 +1,4 @@
+set -e
+
+cp -R yagnats_apcera_client ${BOSH_INSTALL_TARGET}
+

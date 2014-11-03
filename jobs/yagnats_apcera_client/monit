@@ -1,0 +1,5 @@
+check process yagnats_apcera_client
+  with pidfile /var/vcap/sys/run/yagnats_apcera_client/yagnats_apcera_client.pid
+  start program "/var/vcap/jobs/yagnats_apcera_client/bin/yagnats_apcera_client_ctl start"
+  stop program "/var/vcap/jobs/yagnats_apcera_client/bin/yagnats_apcera_client_ctl stop"
+  group vcap
