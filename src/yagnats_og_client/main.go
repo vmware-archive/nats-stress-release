@@ -62,8 +62,8 @@ func main() {
 
 	count := 0
 	for {
-		publishMessage := []byte(fmt.Sprintf("publish_%s_%d", config.Name, count))
-		publishWithReplyMessage := []byte(fmt.Sprintf("request_%s_%d", config.Name, count))
+		publishMessage := []byte(fmt.Sprintf("publish_%s_%d_%s", config.Name, count, time.Now().UTC()))
+		publishWithReplyMessage := []byte(fmt.Sprintf("request_%s_%d_%s", config.Name, count, time.Now().UTC()))
 
 		publishMessage = padMessage(publishMessage, config.PayloadSizeInBytes)
 		publishWithReplyMessage = padMessage(publishWithReplyMessage, config.PayloadSizeInBytes)

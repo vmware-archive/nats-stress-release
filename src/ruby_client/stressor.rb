@@ -14,13 +14,13 @@ class NATSStressor
   end
 
   def perform_interactions
-    uid = @name + @msg_counter.to_s
-    request_msg = "request_#{uid}" + "."*@payload_size
-    publish_msg = "publish_#{uid}" + "."*@payload_size
+    request_msg = "request_#{@name}_#{@msg_counter}_#{Time.now.utc}" + "."*@payload_size
+    publish_msg = "publish_#{@name}_#{@msg_counter}_#{Time.now.utc}" + "."*@payload_size
 
-    @client.publish("broadcasts_of_#{@name}", publish_msg)
+    @client.publish("ruby.publish", publish_msg)
+
     @logger.info("nats.request.sent", {message: "requesting " + request_msg})
-    @client.request("requests_of_#{@name}", request_msg) do |response|
+    @client.request("ruby.request", request_msg) do |response|
       @logger.info("nats.request_reply.received", {message: "got_response for #{request_msg}. it is #{response}"})
     end
     @msg_counter += 1
