@@ -23,7 +23,7 @@ case $1 in
 
     echo $$ > $PIDFILE
 
-    exec bundle exec ruby main.rb
+    exec bundle exec ruby $PACKAGE_DIR/panel/main.rb
 
     ;;
 
