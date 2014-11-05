@@ -1,21 +1,13 @@
 meta:
-  # override this in your stub to set the environment name,
-  # which is used for the deployment name
-  #
-  # i.e. cf-tabasco
-  environment: ~
-
-  releases:
-  - name: nats-stress
-    version: latest
-
   stemcell: (( merge ))
 
-name: (( meta.environment ))
+name: nats-stress
 
 director_uuid: (( merge ))
 
-releases: (( merge || meta.releases ))
+releases:
+  - name: nats-stress
+    version: latest
 
 networks: (( merge ))
 

@@ -1,0 +1,85 @@
+meta:
+  stemcell:
+    name: bosh-aws-xen-ubuntu-trusty-go_agent
+    version: latest
+
+update:
+  canaries: 1
+  max_in_flight: 50
+  canary_watch_time: 1000-180000
+  update_watch_time: 1000-180000
+  serial: true
+
+properties:
+  nats:
+    user: nats
+    password: nats
+    address: (( jobs.nats_z1.networks.nats1.static_ips.[0] ))
+
+jobs:
+  # specify nats static IP
+  - name: nats_z1
+    instances: 1
+    networks:
+      - name: nats1
+        static_ips: (( static_ips(1) ))
+
+  - name: nats_z2
+    instances: 1
+    networks:
+      - name: nats2
+        static_ips: (( static_ips(1) ))
+
+  - name: ruby_client_z1
+    instances: 1
+    networks:
+      - name: nats1
+        static_ips: (( static_ips(2) ))
+
+  - name: ruby_client_z2
+    instances: 1
+    networks:
+      - name: nats2
+        static_ips: (( static_ips(2) ))
+
+  - name: yagnats_og_client_z1
+    instances: 1
+    networks:
+      - name: nats1
+        static_ips: (( static_ips(3) ))
+
+  - name: yagnats_og_client_z2
+    instances: 1
+    networks:
+      - name: nats2
+        static_ips: (( static_ips(3) ))
+
+  - name: yagnats_apcera_client_z1
+    instances: 1
+    networks:
+      - name: nats1
+        static_ips: (( static_ips(4) ))
+
+  - name: yagnats_apcera_client_z2
+    instances: 1
+    networks:
+      - name: nats2
+        static_ips: (( static_ips(4) ))
+
+compilation:
+  cloud_properties:
+    instance_type: c3.large
+    availability_zone: us-east-1a
+
+resource_pools:
+  - name: medium_z1
+    cloud_properties:
+      instance_type: m3.medium
+      availability_zone: us-east-1a
+
+  - name: medium_z2
+    cloud_properties:
+      instance_type: m3.medium
+      availability_zone: us-east-1d
+
+networks: (( merge ))

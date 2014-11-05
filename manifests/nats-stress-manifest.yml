@@ -4,7 +4,7 @@ compilation:
   network: nats1
   reuse_compilation_vms: true
   workers: 6
-director_uuid: 3f695519-5a17-480f-879a-582dbe31131e
+director_uuid: cf8dc1fc-9c42-4ffc-96f1-fbad983a6ce6
 jobs:
 - instances: 1
   name: nats_z1
@@ -111,10 +111,6 @@ jobs:
   - name: yagnats_apcera_client
     release: nats-stress
 meta:
-  environment: null
-  releases:
-  - name: nats-stress
-    version: latest
   stemcell:
     name: bosh-warden-boshlite-ubuntu-trusty-go_agent
     version: latest
