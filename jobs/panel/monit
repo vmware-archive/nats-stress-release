@@ -1,0 +1,5 @@
+check process panel
+  with pidfile /var/vcap/sys/run/panel/panel.pid
+  start program "/var/vcap/jobs/panel/bin/panel_ctl start"
+  stop program "/var/vcap/jobs/panel/bin/panel_ctl stop"
+  group vcap

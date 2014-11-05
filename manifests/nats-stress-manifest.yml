@@ -19,6 +19,8 @@ jobs:
   templates:
   - name: nats
     release: nats-stress
+  - name: panel
+    release: nats-stress
 - instances: 1
   name: nats_z2
   networks:
@@ -31,6 +33,8 @@ jobs:
   resource_pool: medium_z2
   templates:
   - name: nats
+    release: nats-stress
+  - name: panel
     release: nats-stress
 - instances: 1
   name: ruby_client_z1
