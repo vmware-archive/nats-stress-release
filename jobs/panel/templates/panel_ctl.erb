@@ -19,15 +19,11 @@ case $1 in
     mkdir -p $RUN_DIR
     mkdir -p $LOG_DIR
 
-    chown vcap:vcap $RUN_DIR
-    chown vcap:vcap $LOG_DIR
-
     PATH=$RUBY_DIR/bin:$PATH
 
     echo $$ > $PIDFILE
-    chown vcap:vcap $PIDFILE
 
-    exec chpst -u vcap:vcap bundle exec ruby main.rb 
+    exec bundle exec ruby main.rb
 
     ;;
 
