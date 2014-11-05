@@ -16,6 +16,8 @@ meta:
   nats_templates:
   - name: nats
     release: (( meta.release.name ))
+  - name: panel
+    release: (( meta.release.name ))
 
   ruby_client_templates:
   - name: ruby_client

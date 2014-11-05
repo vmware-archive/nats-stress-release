@@ -23,3 +23,4 @@ releases/**/*.tgz
 .DS_Store
 bosh-lite/manifests/*
 bosh-lite/tmp/*
+manifests/runtime1-nats-stress-manifest.yml

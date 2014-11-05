@@ -1,0 +1,9 @@
+---
+name: panel
+packages:
+  - ruby-2.1.3
+  - common
+  - panel
+templates:
+  panel_ctl.erb: bin/panel_ctl
+properties: {}
