@@ -54,22 +54,22 @@ func main() {
 	}
 
 	client.Subscribe(">", func(msg *nats.Msg) {
-		logger.Info(fmt.Sprintf("Got message: %s\n", msg.Data))
+		logger.Info(fmt.Sprintf("receiving %s\n", msg.Data))
 	})
 
 	count := 0
 	for {
-		publishMessage := []byte(fmt.Sprintf("publish_%s_%d_%s", config.Name, count, time.Now().UTC()))
-		publishRequestMessage := []byte(fmt.Sprintf("request_%s_%d_%s", config.Name, count, time.Now().UTC()))
+		publishMessage := []byte(fmt.Sprintf("publish_%s_%d", config.Name, count))
+		publishRequestMessage := []byte(fmt.Sprintf("request_%s_%d", config.Name, count))
 
 		publishMessage = padMessage(publishMessage, config.PayloadSizeInBytes)
 		publishRequestMessage = padMessage(publishRequestMessage, config.PayloadSizeInBytes)
 
+		logger.Info(fmt.Sprintf("publishing %s\n", publishMessage))
 		client.Publish("yagnats.apcera.publish", publishMessage)
-		logger.Info(fmt.Sprintf("Published message: %s\n", publishMessage))
 
+		logger.Info(fmt.Sprintf("requesting %s\n", publishRequestMessage))
 		client.PublishRequest("yagnats.apcera.request", "yagnats.apcera.reply", publishRequestMessage)
-		logger.Info(fmt.Sprintf("Requested message: %s\n", publishRequestMessage))
 
 		count++
 		time.Sleep(time.Duration(config.PublishIntervalInSeconds) * time.Second)

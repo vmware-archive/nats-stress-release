@@ -49,6 +49,8 @@ jobs:
   templates:
   - name: ruby_client
     release: nats-stress
+  - name: panel
+    release: nats-stress
 - instances: 1
   name: ruby_client_z2
   networks:
@@ -61,6 +63,8 @@ jobs:
   resource_pool: medium_z2
   templates:
   - name: ruby_client
+    release: nats-stress
+  - name: panel
     release: nats-stress
 - instances: 1
   name: yagnats_og_client_z1
@@ -75,6 +79,8 @@ jobs:
   templates:
   - name: yagnats_og_client
     release: nats-stress
+  - name: panel
+    release: nats-stress
 - instances: 1
   name: yagnats_og_client_z2
   networks:
@@ -87,6 +93,8 @@ jobs:
   resource_pool: medium_z2
   templates:
   - name: yagnats_og_client
+    release: nats-stress
+  - name: panel
     release: nats-stress
 - instances: 1
   name: yagnats_apcera_client_z1
@@ -101,6 +109,8 @@ jobs:
   templates:
   - name: yagnats_apcera_client
     release: nats-stress
+  - name: panel
+    release: nats-stress
 - instances: 1
   name: yagnats_apcera_client_z2
   networks:
@@ -113,6 +123,8 @@ jobs:
   resource_pool: medium_z2
   templates:
   - name: yagnats_apcera_client
+    release: nats-stress
+  - name: panel
     release: nats-stress
 meta:
   stemcell:
