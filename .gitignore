@@ -26,3 +26,4 @@ bosh-lite/tmp/*
 manifests/runtime1-nats-stress-manifest.yml
 src/yagnats_og_client/vendor/bin
 src/yagnats_og_client/vendor/pkg
+logs/

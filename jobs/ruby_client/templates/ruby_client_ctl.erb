@@ -27,7 +27,6 @@ case $1 in
 
     echo $$ > $PIDFILE
     chown vcap:vcap $PIDFILE
-
     exec chpst -u vcap:vcap bundle exec $PACKAGE_DIR/ruby_client/main.rb $CONFIG_DIR/ruby_client.yml 
 
     ;;

@@ -9,19 +9,20 @@ class NATSStressor
 
   def start
     @client.subscribe(">") do |message, reply, subject|
-      @logger.info("nats.broadcast.received", {message: message})
+      @logger.info("receiving " + message)
     end
   end
 
   def perform_interactions
-    request_msg = "request_#{@name}_#{@msg_counter}_#{Time.now.utc}" + "."*@payload_size
-    publish_msg = "publish_#{@name}_#{@msg_counter}_#{Time.now.utc}" + "."*@payload_size
+    request_msg = "request_#{@name}_#{@msg_counter}" + "."*@payload_size
+    publish_msg = "publish_#{@name}_#{@msg_counter}" + "."*@payload_size
 
+    @logger.info("publishing " + publish_msg)
     @client.publish("ruby.publish", publish_msg)
 
-    @logger.info("nats.request.sent", {message: "requesting " + request_msg})
+    @logger.info("requesting " + request_msg)
     @client.request("ruby.request", request_msg) do |response|
-      @logger.info("nats.request_reply.received", {message: "got_response for #{request_msg}. it is #{response}"})
+      @logger.info("receiving_response #{request_msg} #{response}")
     end
     @msg_counter += 1
   end

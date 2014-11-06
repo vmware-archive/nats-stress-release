@@ -22,13 +22,19 @@ meta:
   ruby_client_templates:
   - name: ruby_client
     release: (( meta.release.name ))
+  - name: panel
+    release: (( meta.release.name ))
 
   yagnats_og_client_templates:
   - name: yagnats_og_client
     release: (( meta.release.name ))
+  - name: panel
+    release: (( meta.release.name ))
 
   yagnats_apcera_client_templates:
   - name: yagnats_apcera_client
+    release: (( meta.release.name ))
+  - name: panel
     release: (( meta.release.name ))
 
 jobs:

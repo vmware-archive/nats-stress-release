@@ -57,22 +57,22 @@ func main() {
 	}
 
 	client.Subscribe(">", func(msg *yagnats.Message) {
-		logger.Info(fmt.Sprintf("Got message: %s\n", msg.Payload))
+		logger.Info(fmt.Sprintf("receiving %s\n", msg.Payload))
 	})
 
 	count := 0
 	for {
-		publishMessage := []byte(fmt.Sprintf("publish_%s_%d_%s", config.Name, count, time.Now().UTC()))
-		publishWithReplyMessage := []byte(fmt.Sprintf("request_%s_%d_%s", config.Name, count, time.Now().UTC()))
+		publishMessage := []byte(fmt.Sprintf("publish_%s_%d", config.Name, count))
+		publishWithReplyMessage := []byte(fmt.Sprintf("request_%s_%d", config.Name, count))
 
 		publishMessage = padMessage(publishMessage, config.PayloadSizeInBytes)
 		publishWithReplyMessage = padMessage(publishWithReplyMessage, config.PayloadSizeInBytes)
 
+		logger.Info(fmt.Sprintf("publishing %s\n", publishMessage))
 		client.Publish("yagnats.og.publish", publishMessage)
-		logger.Info(fmt.Sprintf("Published message: %s\n", publishMessage))
 
+		logger.Info(fmt.Sprintf("requesting %s\n", publishWithReplyMessage))
 		client.PublishWithReplyTo("yagnats.og.request", "yagnats.og.reply", publishWithReplyMessage)
-		logger.Info(fmt.Sprintf("Requested message: %s\n", publishWithReplyMessage))
 
 		count++
 		time.Sleep(time.Duration(config.PublishIntervalInSeconds) * time.Second)
