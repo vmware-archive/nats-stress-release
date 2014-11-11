@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/cloudfoundry-incubator/candiedyaml"
@@ -56,14 +58,35 @@ func main() {
 		panic("Wrong auth or something.")
 	}
 
+	received := map[string]int{}
+	m := sync.Mutex{}
 	client.Subscribe(">", func(msg *yagnats.Message) {
-		logger.Info(fmt.Sprintf("receiving %s\n", msg.Payload))
+		messageParts := strings.Split(string(msg.Payload), "--")
+			if len(messageParts) < 2 {
+				return
+			}
+		messageType := messageParts[0]
+		messageName := messageParts[1]
+		if messageType == "publish" {
+			m.Lock()
+			if _, found := received[messageName]; !found {
+				received[messageName] = 0
+			}
+			received[messageName] += 1
+			m.Unlock()
+			output := []string{}
+			for k, v := range received {
+				output = append(output, fmt.Sprintf("%s: %d", k, v))
+			}
+			logger.Info(strings.Join(output, " "))
+		}
+		// logger.Info(fmt.Sprintf("receiving %s\n", msg.Payload))
 	})
 
 	count := 0
 	for {
-		publishMessage := []byte(fmt.Sprintf("publish_%s_%d", config.Name, count))
-		publishWithReplyMessage := []byte(fmt.Sprintf("request_%s_%d", config.Name, count))
+		publishMessage := []byte(fmt.Sprintf("publish--%s--%d--", config.Name, count))
+		publishWithReplyMessage := []byte(fmt.Sprintf("request--%s--%d--", config.Name, count))
 
 		publishMessage = padMessage(publishMessage, config.PayloadSizeInBytes)
 		publishWithReplyMessage = padMessage(publishWithReplyMessage, config.PayloadSizeInBytes)
