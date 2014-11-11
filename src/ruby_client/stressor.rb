@@ -5,17 +5,24 @@ class NATSStressor
     @name = name
     @payload_size = payload_size
     @msg_counter = 1
+    @received = {}
   end
 
   def start
     @client.subscribe(">") do |message, reply, subject|
-      @logger.info("receiving " + message)
+      type, name, _ = message.split('--')
+      if type == 'publish'
+        @received[name] ||= 0
+        @received[name] += 1
+        @logger.info(@received.map { |k, v| "#{k}: #{v}" }.join(' '))
+      end
+      # @logger.info("receiving " + message)
     end
   end
 
   def perform_interactions
-    request_msg = "request_#{@name}_#{@msg_counter}" + "."*@payload_size
-    publish_msg = "publish_#{@name}_#{@msg_counter}" + "."*@payload_size
+    request_msg = "request--#{@name}--#{@msg_counter}--" + "."*@payload_size
+    publish_msg = "publish--#{@name}--#{@msg_counter}--" + "."*@payload_size
 
     @logger.info("publishing " + publish_msg)
     @client.publish("ruby.publish", publish_msg)
