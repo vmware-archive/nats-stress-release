@@ -67,6 +67,8 @@ jobs:
         static_ips: (( merge ))
     properties:
       networks: (( meta.networks.z1 ))
+      publish_interval_in_seconds: 0.1
+      payload_size_in_bytes: 300
 
   - name: ruby_client_z2
     templates: (( merge || meta.ruby_client_templates ))
@@ -77,6 +79,8 @@ jobs:
         static_ips: (( merge ))
     properties:
       networks: (( meta.networks.z2 ))
+      publish_interval_in_seconds: 0.1
+      payload_size_in_bytes: 300
 
   - name: yagnats_og_client_z1
     templates: (( merge || meta.yagnats_og_client_templates ))
@@ -87,6 +91,8 @@ jobs:
         static_ips: (( merge ))
     properties:
       networks: (( meta.networks.z1 ))
+      publish_interval_in_seconds: 0.1
+      payload_size_in_bytes: 300
 
   - name: yagnats_og_client_z2
     templates: (( merge || meta.yagnats_og_client_templates ))
@@ -97,6 +103,8 @@ jobs:
         static_ips: (( merge ))
     properties:
       networks: (( meta.networks.z2 ))
+      publish_interval_in_seconds: 0.1
+      payload_size_in_bytes: 300
 
   - name: yagnats_apcera_client_z1
     templates: (( merge || meta.yagnats_apcera_client_templates ))
@@ -107,6 +115,8 @@ jobs:
         static_ips: (( merge ))
     properties:
       networks: (( meta.networks.z1 ))
+      publish_interval_in_seconds: 0.1
+      payload_size_in_bytes: 300
 
   - name: yagnats_apcera_client_z2
     templates: (( merge || meta.yagnats_apcera_client_templates ))
@@ -117,6 +127,8 @@ jobs:
         static_ips: (( merge ))
     properties:
       networks: (( meta.networks.z2 ))
+      publish_interval_in_seconds: 0.1
+      payload_size_in_bytes: 300
 
 properties:
   nats:
