@@ -2,6 +2,20 @@ require 'sinatra'
 
 set :bind, '0.0.0.0'
 
+def run_commands(commands)
+  output = {}
+  commands.each do |command|
+    output[command] = `#{command} 2>&1`
+  end
+  result = ""
+  result << "Time: #{Time.now}\n"
+  output.each do |c, o|
+    result << c << "\n"
+    result << o << "\n"
+  end
+  result
+end
+
 get '/' do
   "jello world, it's delicious #{`whoami`}"
 end
@@ -10,30 +24,29 @@ get '/ifconfig' do
   `ifconfig`
 end
 
-get '/slowmo/:interface/:time' do
-  cmd = `tc qdisc delete dev #{params[:interface]} root`
-  cmd2 = `tc qdisc add dev #{params[:interface]} root netem delay #{params[:time]}`
-  <<FOO
-Time: #{Time.now}
-Remove output: #{cmd}
-Set: #{params[:time]} #{cmd2}
-FOO
+get '/slowmo/:interface/:port/:time' do
+  commands = [
+    "tc qdisc del dev #{params[:interface]} root",
+    "tc qdisc add dev #{params[:interface]} handle 1: root htb",
+    "tc class add dev #{params[:interface]} parent 1: classid 1:11 htb rate 4gbps",
+    "tc qdisc add dev #{params[:interface]} parent 1:11 netem delay #{params[:time]}",
+    "tc filter add dev #{params[:interface]} protocol ip prio 1 u32 match ip dport #{params[:port]} 0xffff flowid 1:11",
+  ]
+  run_commands(commands)
 end
 
 get '/dropmo/:rate' do
-  out = `tc qdisc change dev #{params[:interface]} root netem loss #{params[:rate]}%`
-  <<FOO
-Time: #{Time.now}
-Reset out: #{out}
-FOO
+  commands = [
+    "tc qdisc change dev #{params[:interface]} root netem loss #{params[:rate]}%",
+  ]
+  run_commands(commands)
 end
 
 get '/reset/:interface' do
-  out = `tc qdisc delete dev #{params[:interface]} root`
-  <<FOO
-Time: #{Time.now}
-Reset out: #{out}
-FOO
+  commands = [
+    "tc qdisc del dev #{params[:interface]} root",
+  ]
+  run_commands(commands)
 end
 
 
