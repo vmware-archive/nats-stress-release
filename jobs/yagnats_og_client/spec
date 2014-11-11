@@ -8,10 +8,10 @@ templates:
   yagnats_og_client_ctl.erb: bin/yagnats_og_client_ctl
   yagnats_og_client.yml.erb: config/yagnats_og_client.yml
 properties:
-  yagnats_og_client.payload_size_in_bytes: 
+  payload_size_in_bytes:
     default: 1
     description: Number of bytes to include in the payload
-  yagnats_og_client.publish_interval_in_seconds: 
+  publish_interval_in_seconds:
     default: 1
     description: seconds between requests
   nats.machines:

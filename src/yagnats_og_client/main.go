@@ -19,7 +19,7 @@ type NatsInformation struct {
 }
 
 type Config struct {
-	PublishIntervalInSeconds int               `yaml:"publish_interval_in_seconds"`
+	PublishIntervalInSeconds float64           `yaml:"publish_interval_in_seconds"`
 	Name                     string            `yaml:"name"`
 	PayloadSizeInBytes       int               `yaml:"payload_size_in_bytes"`
 	NatsServers              []NatsInformation `yaml:"nats_servers"`
@@ -75,7 +75,7 @@ func main() {
 		client.PublishWithReplyTo("yagnats.og.request", "yagnats.og.reply", publishWithReplyMessage)
 
 		count++
-		time.Sleep(time.Duration(config.PublishIntervalInSeconds) * time.Second)
+		time.Sleep(time.Duration(config.PublishIntervalInSeconds * float64(time.Second)))
 	}
 }
 

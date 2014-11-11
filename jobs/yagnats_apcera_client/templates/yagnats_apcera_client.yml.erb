@@ -8,6 +8,6 @@ nats_servers:
 <% end %>
 
 name: <%= "#{spec.job.name}_#{spec.index.to_s}" %> 
-publish_interval_in_seconds: <%= p('yagnats_apcera_client.publish_interval_in_seconds') %>
-payload_size_in_bytes: <%= p('yagnats_apcera_client.payload_size_in_bytes') %>
+publish_interval_in_seconds: <%= p('publish_interval_in_seconds') %>
+payload_size_in_bytes: <%= p('payload_size_in_bytes') %>
 

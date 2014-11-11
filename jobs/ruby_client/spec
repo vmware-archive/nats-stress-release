@@ -8,10 +8,10 @@ templates:
   ruby_client_ctl.erb: bin/ruby_client_ctl
   ruby_client.yml.erb: config/ruby_client.yml
 properties:
-  ruby_client.payload_size_in_bytes: 
+  payload_size_in_bytes:
     default: 1
     description: Additional number of bytes to include in the payload
-  ruby_client.publish_interval_in_seconds: 
+  publish_interval_in_seconds:
     default: 0.5
     description: seconds between requests
   nats.machines:
