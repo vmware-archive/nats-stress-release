@@ -8,6 +8,10 @@ templates:
   yagnats_apcera_client_ctl.erb: bin/yagnats_apcera_client_ctl
   yagnats_apcera_client.yml.erb: config/yagnats_apcera_client.yml
 properties:
+  datadog_api_key:
+    description:
+  population:
+    description:
   payload_size_in_bytes:
     default: 1
     description: Number of bytes to include in the payload

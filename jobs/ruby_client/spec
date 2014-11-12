@@ -8,6 +8,12 @@ templates:
   ruby_client_ctl.erb: bin/ruby_client_ctl
   ruby_client.yml.erb: config/ruby_client.yml
 properties:
+  datadog_api_key:
+    description:
+  storage_file:
+    default: "/var/vcap/sys/log/ruby_client/storage.json"
+  population:
+    description:
   payload_size_in_bytes:
     default: 1
     description: Additional number of bytes to include in the payload
