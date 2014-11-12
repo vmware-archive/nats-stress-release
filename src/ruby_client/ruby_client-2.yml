@@ -1,0 +1,9 @@
+---
+nats_servers:
+  - nats://nats:nats@127.0.0.1:4222
+
+name: "stressor-2"
+publish_interval_in_seconds: 2
+payload_size_in_bytes: 5
+population: 2
+storage_file: "/var/vcap/sys/log/ruby_client/storage-2.json"

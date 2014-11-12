@@ -20,7 +20,8 @@ EM.run do
   Steno.init(config)
   logger = Steno.logger("ruby.client")
 
-  stressor = NATSStressor.new(client, logger, conf["name"], conf["payload_size_in_bytes"])
+  stressor = NATSStressor.new(client, logger, conf["name"], conf["payload_size_in_bytes"], conf["population"], conf["datadog_api_key"],
+                             conf["storage_file"])
   stressor.start
 
   EM.add_periodic_timer(conf["publish_interval_in_seconds"]) do

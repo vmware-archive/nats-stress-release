@@ -28,7 +28,8 @@ case $1 in
     echo $$ > $PIDFILE
     chown vcap:vcap $PIDFILE
 
-    exec chpst -u vcap:vcap go run $PACKAGE_DIR/yagnats_og_client/main.go -c $YAGNATS_OG_CLIENT_CONFIG_FILE
+    go build -o $PACKAGE_DIR/main $PACKAGE_DIR/yagnats_og_client/main.go
+    exec chpst -u vcap:vcap $PACKAGE_DIR/main -c $YAGNATS_OG_CLIENT_CONFIG_FILE
 
     ;;
 

@@ -35,9 +35,13 @@ get '/slowmo/:interface/:port/:time' do
   run_commands(commands)
 end
 
-get '/dropmo/:rate' do
+get '/dropmo/:interface/:port/:rate' do
   commands = [
-    "tc qdisc change dev #{params[:interface]} root netem loss #{params[:rate]}%",
+    "tc qdisc del dev #{params[:interface]} root",
+    "tc qdisc add dev #{params[:interface]} handle 1: root htb",
+    "tc class add dev #{params[:interface]} parent 1: classid 1:11 htb rate 4gbps",
+    "tc qdisc add dev #{params[:interface]} parent 1:11 netem loss #{params[:rate].to_f * 100.0}%",
+    "tc filter add dev #{params[:interface]} protocol ip prio 1 u32 match ip dport #{params[:port]} 0xffff flowid 1:11",
   ]
   run_commands(commands)
 end
