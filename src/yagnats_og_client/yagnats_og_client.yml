@@ -9,3 +9,4 @@ publish_interval_in_seconds: 2
 name: "yagnats_client"
 payload_size_in_bytes: 15
 population: 2
+socket: '/tmp/socketito.sock'

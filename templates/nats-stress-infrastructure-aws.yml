@@ -34,37 +34,37 @@ jobs:
     instances: 1
     networks:
       - name: nats1
-        static_ips: (( static_ips(2) ))
+        static_ips: (( static_ips(2, 3, 4, 5) ))
 
   - name: ruby_client_z2
     instances: 1
     networks:
       - name: nats2
-        static_ips: (( static_ips(2) ))
+        static_ips: (( static_ips(2, 3, 4, 5) ))
 
   - name: yagnats_og_client_z1
     instances: 1
     networks:
       - name: nats1
-        static_ips: (( static_ips(3) ))
+        static_ips: (( static_ips(6, 7, 8, 9) ))
 
   - name: yagnats_og_client_z2
     instances: 1
     networks:
       - name: nats2
-        static_ips: (( static_ips(3) ))
+        static_ips: (( static_ips(6, 7, 8, 9) ))
 
   - name: yagnats_apcera_client_z1
     instances: 1
     networks:
       - name: nats1
-        static_ips: (( static_ips(4) ))
+        static_ips: (( static_ips(10, 11, 12, 13) ))
 
   - name: yagnats_apcera_client_z2
     instances: 1
     networks:
       - name: nats2
-        static_ips: (( static_ips(4) ))
+        static_ips: (( static_ips(10, 11, 12, 13) ))
 
 compilation:
   cloud_properties:

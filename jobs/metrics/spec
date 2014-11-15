@@ -1,0 +1,16 @@
+---
+name: metrics
+packages:
+  - ruby-2.1.3
+  - common
+  - metrics
+templates:
+  metrics_ctl.erb: bin/metrics_ctl
+  metrics.yml.erb: config/metrics.yml
+properties:
+  datadog_api_key:
+    description:
+  socket:
+    default: /var/vcap/data/sys/run/metrics/metrics.sock
+  nats.machines:
+    description: location of nats servers

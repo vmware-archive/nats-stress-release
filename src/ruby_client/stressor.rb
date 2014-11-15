@@ -1,5 +1,7 @@
+require 'socket'
+
 class NATSStressor
-  def initialize(client, logger, name, payload_size, population, api_key, storage_file)
+  def initialize(client, logger, name, payload_size, population, api_key, storage_file, socket)
     @client = client
     @logger = logger
     @name = name
@@ -10,6 +12,7 @@ class NATSStressor
     @population = population
     @api_key = api_key
     @storage_file = storage_file
+    @socket = socket
   end
 
   def start
@@ -39,11 +42,9 @@ class NATSStressor
 
     @logger.info("publishing " + publish_msg)
     @logger.info("completed #{@msgs_completed} messsages. outstanding: #{@message_tally.keys.size}")
-    datadog("msgs.sent", @msg_counter)
-    datadog("msgs.completed", @msgs_completed)
-    datadog("msgs.outstanding", @message_tally.keys.size)
     puts "original_msg pub: #{publish_msg}"
     @client.publish("ruby.publish", publish_msg)
+    communicate_metrics(publish_msg)
     @message_tally[publish_msg] = []
 
     File.write(@storage_file, JSON.pretty_generate(@message_tally))
@@ -54,7 +55,17 @@ class NATSStressor
     @msg_counter += 1
   end
 
+  def upload_data
+    datadog("msgs.sent", @msg_counter)
+    datadog("msgs.completed", @msgs_completed)
+    datadog("msgs.outstanding", @message_tally.keys.size)
+  end
+
   private
+  def communicate_metrics(message)
+    UNIXSocket.new(@socket).tap{ |s| s.puts message }.close
+  end
+
   def datadog(metric, value)
     curl = <<-BASH
       curl -s -X POST -H "Content-type: application/json" \

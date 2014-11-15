@@ -1,0 +1,43 @@
+#!/bin/bash
+
+RUN_DIR=/var/vcap/sys/run/metrics
+PIDFILE=$RUN_DIR/metrics.pid
+PACKAGE_DIR=/var/vcap/packages/metrics
+JOB_DIR=/var/vcap/jobs/metrics
+LOG_DIR=/var/vcap/sys/log/metrics
+RUBY_DIR=/var/vcap/packages/ruby-2.1.3
+
+export CONFIG_DIR=$JOB_DIR/config
+export metrics_CONFIG_DIR=$CONFIG_DIR/metrics.yml
+export BUNDLE_GEMFILE=/var/vcap/packages/metrics/metrics/Gemfile
+
+source /var/vcap/packages/common/utils.sh
+
+case $1 in
+  start)
+    pid_guard $PIDFILE "ruby client"
+
+    mkdir -p $RUN_DIR
+    mkdir -p $LOG_DIR
+
+    chown vcap:vcap $RUN_DIR
+    chown vcap:vcap $LOG_DIR
+
+    PATH=$RUBY_DIR/bin:$PATH
+
+    echo $$ > $PIDFILE
+    chown vcap:vcap $PIDFILE
+    exec chpst -u vcap:vcap bundle exec $PACKAGE_DIR/metrics/main.rb $CONFIG_DIR/metrics.yml 
+
+    ;;
+
+  stop)
+    kill_and_wait $PIDFILE
+
+    ;;
+
+  *)
+    echo "Usage: metrics_ctl {start|stop}"
+
+    ;;
+esac

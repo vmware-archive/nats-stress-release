@@ -22,17 +22,23 @@ meta:
   ruby_client_templates:
   - name: ruby_client
     release: (( meta.release.name ))
+  - name: metrics
+    release: (( meta.release.name ))
   - name: panel
     release: (( meta.release.name ))
 
   yagnats_og_client_templates:
   - name: yagnats_og_client
     release: (( meta.release.name ))
+  - name: metrics
+    release: (( meta.release.name ))
   - name: panel
     release: (( meta.release.name ))
 
   yagnats_apcera_client_templates:
   - name: yagnats_apcera_client
+    release: (( meta.release.name ))
+  - name: metrics
     release: (( meta.release.name ))
   - name: panel
     release: (( meta.release.name ))
@@ -67,6 +73,10 @@ jobs:
         static_ips: (( merge ))
     properties:
       networks: (( meta.networks.z1 ))
+      nats:
+        machines:
+        - 10.10.81.101
+        - 10.10.19.101
 
   - name: ruby_client_z2
     templates: (( merge || meta.ruby_client_templates ))
@@ -77,6 +87,10 @@ jobs:
         static_ips: (( merge ))
     properties:
       networks: (( meta.networks.z2 ))
+      nats:
+        machines:
+        - 10.10.19.101
+        - 10.10.81.101
 
   - name: yagnats_og_client_z1
     templates: (( merge || meta.yagnats_og_client_templates ))
@@ -87,6 +101,10 @@ jobs:
         static_ips: (( merge ))
     properties:
       networks: (( meta.networks.z1 ))
+      nats:
+        machines:
+        - 10.10.81.101
+        - 10.10.19.101
 
   - name: yagnats_og_client_z2
     templates: (( merge || meta.yagnats_og_client_templates ))
@@ -97,6 +115,10 @@ jobs:
         static_ips: (( merge ))
     properties:
       networks: (( meta.networks.z2 ))
+      nats:
+        machines:
+        - 10.10.19.101
+        - 10.10.81.101
 
   - name: yagnats_apcera_client_z1
     templates: (( merge || meta.yagnats_apcera_client_templates ))
@@ -107,6 +129,10 @@ jobs:
         static_ips: (( merge ))
     properties:
       networks: (( meta.networks.z1 ))
+      nats:
+        machines:
+        - 10.10.81.101
+        - 10.10.19.101
 
   - name: yagnats_apcera_client_z2
     templates: (( merge || meta.yagnats_apcera_client_templates ))
@@ -117,12 +143,16 @@ jobs:
         static_ips: (( merge ))
     properties:
       networks: (( meta.networks.z2 ))
+      nats:
+        machines:
+        - 10.10.19.101
+        - 10.10.81.101
 
 properties:
   population: 6
   datadog_api_key: ~
-  publish_interval_in_seconds: 0.01
-  payload_size_in_bytes: 300
+  publish_interval_in_seconds: 0.1
+  payload_size_in_bytes: 32
   nats:
     user: (( merge ))
     password: (( merge ))
