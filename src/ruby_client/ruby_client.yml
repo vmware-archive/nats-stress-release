@@ -6,4 +6,5 @@ name: "stressor-1"
 publish_interval_in_seconds: 2
 payload_size_in_bytes: 5
 population: 2
-storage_file: "/var/vcap/sys/log/ruby_client/storage-1.json"
+storage_file: "/tmp/storage-1.json"
+socket: "/tmp/socketito.sock"

@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"net"
 	"os/exec"
 	"regexp"
 	"strings"
@@ -30,6 +31,7 @@ type Config struct {
 	NatsServers              []NatsInformation `yaml:"nats_servers"`
 	Population               int               `yaml:"population"`
 	APIKey                   string            `yaml:"datadog_api_key"`
+	Socket                   string            `yaml:"socket"`
 }
 
 func dedup(xs *[]string) {
@@ -45,10 +47,12 @@ func dedup(xs *[]string) {
 	*xs = (*xs)[:j]
 }
 
+var config Config
+
 func main() {
 	var configPath = flag.String("c", "/var/vcap/jobs/yagnats_apcera_client/config/yagnats_apcera_client.yml", "config path")
 	flag.Parse()
-	config := InitConfigFromFile(*configPath)
+	config = InitConfigFromFile(*configPath)
 
 	c := &gosteno.Config{
 		Sinks: []gosteno.Sink{
@@ -106,6 +110,17 @@ func main() {
 	})
 
 	count := 0
+
+	go func() {
+		ticker := time.NewTicker(time.Second)
+		for {
+			<-ticker.C
+			datadog(config, "msgs.sent", count)
+			datadog(config, "msgs.completed", msgsCompleted)
+			datadog(config, "msgs.outstanding", len(messageTally))
+		}
+	}()
+
 	for {
 		publishMessage := []byte(fmt.Sprintf("publish--%s--%d--", config.Name, count))
 		//publishRequestMessage := []byte(fmt.Sprintf("request--%s--%d--", config.Name, count))
@@ -115,16 +130,26 @@ func main() {
 
 		logger.Info(fmt.Sprintf("publishing %s\n", publishMessage))
 		logger.Info(fmt.Sprintf("completed %d messages. outstanding: %d", msgsCompleted, len(messageTally)))
-		datadog(config, "msgs.sent", count)
-		datadog(config, "msgs.completed", msgsCompleted)
-		datadog(config, "msgs.outstanding", len(messageTally))
 		client.Publish("yagnats.apcera.publish", publishMessage)
+		communicateMetric(publishMessage)
 
 		//logger.Info(fmt.Sprintf("requesting %s\n", publishRequestMessage))
 		//client.PublishRequest("yagnats.apcera.request", "yagnats.apcera.reply", publishRequestMessage)
 
 		count++
 		time.Sleep(time.Duration(config.PublishIntervalInSeconds * float64(time.Second)))
+	}
+}
+
+func communicateMetric(message []byte) {
+	c, err := net.Dial("unix", config.Socket)
+	if err != nil {
+		panic(err)
+	}
+	defer c.Close()
+	_, err = c.Write(message)
+	if err != nil {
+		panic(err)
 	}
 }
 

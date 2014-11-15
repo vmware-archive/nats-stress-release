@@ -1,0 +1,5 @@
+check process metrics
+  with pidfile /var/vcap/sys/run/metrics/metrics.pid
+  start program "/var/vcap/jobs/metrics/bin/metrics_ctl start"
+  stop program "/var/vcap/jobs/metrics/bin/metrics_ctl stop"
+  group vcap
