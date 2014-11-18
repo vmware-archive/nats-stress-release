@@ -5,10 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net"
-	"os/exec"
 	"regexp"
-	"strings"
-	"sync"
 	"time"
 
 	"github.com/apcera/nats"
@@ -76,50 +73,15 @@ func main() {
 		panic(err.Error())
 	}
 
-	messageTally := map[string][]string{}
-	population := config.Population
-	msgsCompleted := 0
-	m := sync.Mutex{}
 	client.Subscribe(">", func(msg *nats.Msg) {
+		communicateMetric([]byte(fmt.Sprintf("received---%s", string(msg.Data))))
 		if matched, _ := regexp.Match("^publish--", msg.Data); matched {
 			publishMessage := []byte(fmt.Sprintf("received_publish--%s--%s", config.Name, msg.Data))
 			client.Publish("yagnats.apcera.publish", publishMessage)
 		}
-
-		r := regexp.MustCompile(fmt.Sprintf("^received_publish--.*?--publish--%s", config.Name))
-		if r.Match(msg.Data) {
-			m.Lock()
-			r := regexp.MustCompile("^received_publish--(.*?)--(.*)")
-			matches := r.FindSubmatch(msg.Data)
-			originalMsg := string(matches[2])
-			recepient := string(matches[1])
-			if _, found := messageTally[originalMsg]; !found {
-				messageTally[originalMsg] = []string{}
-			}
-			messageTally[originalMsg] = append(messageTally[originalMsg], recepient)
-			stuff := messageTally[originalMsg]
-			dedup(&stuff)
-			messageTally[originalMsg] = stuff
-			if len(messageTally[originalMsg]) == population {
-				logger.Info(fmt.Sprintf("tallied up %s\n", strings.Join(messageTally[originalMsg], ",")))
-				msgsCompleted++
-				delete(messageTally, originalMsg)
-			}
-			m.Unlock()
-		}
 	})
 
 	count := 0
-
-	go func() {
-		ticker := time.NewTicker(time.Second)
-		for {
-			<-ticker.C
-			datadog(config, "msgs.sent", count)
-			datadog(config, "msgs.completed", msgsCompleted)
-			datadog(config, "msgs.outstanding", len(messageTally))
-		}
-	}()
 
 	for {
 		publishMessage := []byte(fmt.Sprintf("publish--%s--%d--", config.Name, count))
@@ -128,10 +90,10 @@ func main() {
 		publishMessage = padMessage(publishMessage, config.PayloadSizeInBytes)
 		//publishRequestMessage = padMessage(publishRequestMessage, config.PayloadSizeInBytes)
 
-		logger.Info(fmt.Sprintf("publishing %s\n", publishMessage))
-		logger.Info(fmt.Sprintf("completed %d messages. outstanding: %d", msgsCompleted, len(messageTally)))
+		// logger.Info(fmt.Sprintf("publishing %s\n", publishMessage))
+		// logger.Info(fmt.Sprintf("completed %d messages. outstanding: %d", msgsCompleted, len(messageTally)))
 		client.Publish("yagnats.apcera.publish", publishMessage)
-		communicateMetric(publishMessage)
+		communicateMetric([]byte(fmt.Sprintf("sent---%s", string(publishMessage))))
 
 		//logger.Info(fmt.Sprintf("requesting %s\n", publishRequestMessage))
 		//client.PublishRequest("yagnats.apcera.request", "yagnats.apcera.reply", publishRequestMessage)
@@ -151,23 +113,6 @@ func communicateMetric(message []byte) {
 	if err != nil {
 		panic(err)
 	}
-}
-
-func datadog(config Config, metric string, value interface{}) {
-	curl := `
-		curl -s -X POST -H "Content-type: application/json" \
-		-d '{ "series" :
-						 [{"metric":"nats-stress.` + metric + `",
-							"points":[[` + fmt.Sprintf("%d", time.Now().UTC().Unix()) + `, ` + fmt.Sprintf("%v", value) + `]],
-							"type":"gauge",
-							"host":"` + config.Name + `",
-							"tags":["client:yagnats-apcera"]}
-						]
-				}' \
-		'https://app.datadoghq.com/api/v1/series?api_key=` + config.APIKey + `'
-	`
-	cmd := exec.Command("bash", "-c", curl)
-	cmd.Run()
 }
 
 func padMessage(message []byte, paddingLength int) []byte {

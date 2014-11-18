@@ -29,8 +29,4 @@ EM.run do
   EM.add_periodic_timer(conf["publish_interval_in_seconds"]) do
     stressor.perform_interactions
   end
-
-  EM.add_periodic_timer(1) do
-    stressor.upload_data
-  end
 end
