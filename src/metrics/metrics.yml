@@ -1,4 +1,6 @@
 ---
 storage_file: "/tmp/storage-1.json"
 socket: "/tmp/socketito.sock"
-datadog_api_key: ''
+datadog_api_key: '4226db166495c874b7063ac756182a30'
+nats_servers:
+  - localhost

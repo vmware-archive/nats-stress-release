@@ -1,4 +1,5 @@
 require 'socket'
+require "net/http"
 
 class NATSStressor
   def initialize(client, logger, name, payload_size, population, api_key, storage_file, socket)
@@ -37,6 +38,13 @@ class NATSStressor
 
   private
   def communicate_metric(message)
-    UNIXSocket.new(@socket).tap{ |s| s.puts message }.close
+    http = Net::HTTP.new('127.0.0.1', 4568)
+    request = Net::HTTP::Post.new("/messages")
+    request.body = message
+    http.request(request)
+    #UNIXSocket.new(@socket).tap{ |s| s.puts message }.close
+  rescue Errno::ECONNREFUSED => e
+    @logger.info("couldn't reach metrics")
+    puts e.backtrace
   end
 end
