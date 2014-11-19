@@ -1,10 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"net"
+	"net/http"
 	"regexp"
 	"time"
 
@@ -74,7 +75,10 @@ func main() {
 	}
 
 	client.Subscribe(">", func(msg *nats.Msg) {
-		communicateMetric([]byte(fmt.Sprintf("received---%s", string(msg.Data))))
+		err := communicateMetric([]byte(fmt.Sprintf("received---%s", string(msg.Data))))
+		if err != nil {
+			logger.Error(err.Error())
+		}
 		if matched, _ := regexp.Match("^publish--", msg.Data); matched {
 			publishMessage := []byte(fmt.Sprintf("received_publish--%s--%s", config.Name, msg.Data))
 			client.Publish("yagnats.apcera.publish", publishMessage)
@@ -93,7 +97,10 @@ func main() {
 		// logger.Info(fmt.Sprintf("publishing %s\n", publishMessage))
 		// logger.Info(fmt.Sprintf("completed %d messages. outstanding: %d", msgsCompleted, len(messageTally)))
 		client.Publish("yagnats.apcera.publish", publishMessage)
-		communicateMetric([]byte(fmt.Sprintf("sent---%s", string(publishMessage))))
+		err := communicateMetric([]byte(fmt.Sprintf("sent---%s", string(publishMessage))))
+		if err != nil {
+			logger.Error(err.Error())
+		}
 
 		//logger.Info(fmt.Sprintf("requesting %s\n", publishRequestMessage))
 		//client.PublishRequest("yagnats.apcera.request", "yagnats.apcera.reply", publishRequestMessage)
@@ -103,18 +110,69 @@ func main() {
 	}
 }
 
-func communicateMetric(message []byte) {
-	c, err := net.Dial("unix", config.Socket)
-	if err != nil {
-		panic(err)
-	}
-	defer c.Close()
-	_, err = c.Write(message)
-	if err != nil {
-		panic(err)
-	}
+func communicateMetric(message []byte) error {
+	//c, err := net.DialTimeout("unix", config.Socket, 10*time.Second)
+	resp, err := http.Post("http://127.0.0.1:4568/messages", "application/text", bytes.NewReader(message))
+	resp.Body.Close()
+	return err
+	//defer c.Close()
+	//_, err = c.Write(message)
+	// if err != nil {
+	// 	panic(err)
+	// }
 }
 
+// func processNetErr(err error) {
+// 	if err != nil {
+
+// 		// print error string e.g.
+// 		// "read tcp example.com:80: resource temporarily unavailable"
+// 		fmt.Printf("reader %v\n", err)
+
+// 		// print type of the error, e.g. "*net.OpError"
+// 		fmt.Printf("%T", err)
+
+// 		//if err == os.EINVAL {
+// 		// socket is not valid or already closed
+// 		//fmt.Println("EINVAL")
+// 		//}
+// 		// if err == os.EOF {
+// 		// 	// remote peer closed socket
+// 		// 	fmt.Println("EOF")
+// 		// }
+
+// 		// matching rest of the codes needs typecasting, errno is
+// 		// wrapped on OpError
+// 		if e, ok := err.(*net.OpError); ok {
+// 			// print wrapped error string e.g.
+// 			// "os.Errno : resource temporarily unavailable"
+// 			fmt.Printf("%T : %v\n", e.Error, e.Error)
+// 			if e.Timeout() {
+// 				// is this timeout error?
+// 				fmt.Println("TIMEOUT")
+// 			}
+// 			if e.Temporary() {
+// 				// is this temporary error?  True on timeout,
+// 				// socket interrupts or when buffer is full
+// 				fmt.Println("TEMPORARY")
+// 			}
+
+// 			// specific granular error codes in case we're interested
+// 			// switch e.Error {
+// 			// case os.EAGAIN:
+// 			// 	// timeout
+// 			// 	fmt.Println("EAGAIN")
+// 			// case os.EPIPE:
+// 			// 	// broken pipe (e.g. on connection reset)
+// 			// 	fmt.Println("EPIPE")
+// 			// default:
+// 			// 	// just write raw errno code, can be platform specific
+// 			// 	// (see syscall for definitions)
+// 			// 	fmt.Printf("%d\n", int64(e.Error.(os.Errno)))
+// 			// }
+// 		}
+// 	}
+// }
 func padMessage(message []byte, paddingLength int) []byte {
 	if len(message) < paddingLength {
 		a := make([]byte, paddingLength)

@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
-
 require 'dogapi'
 require 'yaml'
-require 'socket'
+require 'sinatra'
 require 'thread'
-require 'uri'
+#require 'uri'
+require 'json'
 
 class Metrics
   def initialize(config)
@@ -104,8 +104,9 @@ class Metrics
   end
 
   def upload
+    return if seconds_passed < 1.000
     nats_connection = `lsof -iTCP | grep 4222 | grep -v root`
-    server = /(?<server>\d+\.\d+\.\d+\.\d+):4222/.match(nats_connection)[:server]
+    server = /(?<server>\d+\.\d+\.\d+\.\d+|localhost):4222/.match(nats_connection)[:server]
     @servers.each do |s|
       uri = URI(s)
       @datadog.emit_point("nats-stress.server-#{uri.host}", uri.host == server ? 1 : 0, host: @name, tags: ["client:#{@client}"])
@@ -124,27 +125,36 @@ class Metrics
     reset_messages_counter!
   rescue => e
     puts "can't upload: ", e
+    puts e.backtrace
   end
 end
 
 conf = YAML.load_file(ARGV[0])
 metrics = Metrics.new(conf)
 
-threads = []
+# threads = []
 
-threads << Thread.new do
-  loop do
-    metrics.upload
-    sleep 1
-  end
-end
+# threads << Thread.new do
+#   loop do
+#     sleep 1
+#   end
+# end
 
-file = conf['socket']
-File.unlink(file) if File.exists?(file) && File.socket?(file)
-server = UNIXServer.new(file)
-loop do
-  message = server.accept.read
+set :port, 4568
+
+post '/messages' do
+  message = request.body.read
+  p message
   metrics.process(message)
+  metrics.upload
+  "bye"
 end
+# file = conf['socket']
+# File.unlink(file) if File.exists?(file) && File.socket?(file)
+# server = UNIXServer.new(file)
+# loop do
+#   message = server.accept.read
+#   metrics.process(message)
+# end
 
-threads.each(&:join)
+#threads.each(&:join)
