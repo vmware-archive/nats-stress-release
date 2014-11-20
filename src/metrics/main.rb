@@ -3,7 +3,7 @@ require 'dogapi'
 require 'yaml'
 require 'sinatra'
 require 'thread'
-#require 'uri'
+require 'uri'
 require 'json'
 
 class Metrics
@@ -132,29 +132,24 @@ end
 conf = YAML.load_file(ARGV[0])
 metrics = Metrics.new(conf)
 
-# threads = []
+threads = []
+threads << Thread.new do
+  loop do
+    metrics.upload
+    sleep 1
+  end
+end
 
-# threads << Thread.new do
-#   loop do
-#     sleep 1
-#   end
-# end
-
+set :server, :puma
+set :bind, '0.0.0.0'
 set :port, 4568
+
+get '/' do
+  'jello world'
+end
 
 post '/messages' do
   message = request.body.read
-  p message
   metrics.process(message)
-  metrics.upload
   "bye"
 end
-# file = conf['socket']
-# File.unlink(file) if File.exists?(file) && File.socket?(file)
-# server = UNIXServer.new(file)
-# loop do
-#   message = server.accept.read
-#   metrics.process(message)
-# end
-
-#threads.each(&:join)

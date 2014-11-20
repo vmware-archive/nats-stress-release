@@ -14,7 +14,8 @@ EM.run do
     :dont_randomize_servers => true,
   )
   config = Steno::Config.from_hash(
-    :file => "/var/vcap/sys/log/ruby_client/ruby_client.log",
+    # :file => "/var/vcap/sys/log/ruby_client/ruby_client.log",
+    :file => "/tmp/ruby_client.log",
     :level => "debug"
   )
   Steno.init(config)
@@ -22,8 +23,7 @@ EM.run do
 
   stressor = NATSStressor.new(client, logger, conf["name"],
                               conf["payload_size_in_bytes"], conf["population"],
-                              conf["datadog_api_key"], conf["storage_file"],
-                              conf["socket"])
+                              conf["datadog_api_key"], conf["storage_file"])
   stressor.start
 
   EM.add_periodic_timer(conf["publish_interval_in_seconds"]) do

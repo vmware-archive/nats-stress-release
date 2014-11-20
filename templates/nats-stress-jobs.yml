@@ -74,9 +74,7 @@ jobs:
     properties:
       networks: (( meta.networks.z1 ))
       nats:
-        machines:
-        - 10.10.81.101
-        - 10.10.19.101
+        machines: (( .properties.nats.z1_machines ))
 
   - name: ruby_client_z2
     templates: (( merge || meta.ruby_client_templates ))
@@ -88,9 +86,7 @@ jobs:
     properties:
       networks: (( meta.networks.z2 ))
       nats:
-        machines:
-        - 10.10.19.101
-        - 10.10.81.101
+        machines: (( .properties.nats.z2_machines ))
 
   - name: yagnats_og_client_z1
     templates: (( merge || meta.yagnats_og_client_templates ))
@@ -103,8 +99,7 @@ jobs:
       networks: (( meta.networks.z1 ))
       nats:
         machines:
-        - 10.10.81.101
-        - 10.10.19.101
+        machines: (( .properties.nats.z1_machines ))
 
   - name: yagnats_og_client_z2
     templates: (( merge || meta.yagnats_og_client_templates ))
@@ -116,9 +111,7 @@ jobs:
     properties:
       networks: (( meta.networks.z2 ))
       nats:
-        machines:
-        - 10.10.19.101
-        - 10.10.81.101
+        machines: (( .properties.nats.z2_machines ))
 
   - name: yagnats_apcera_client_z1
     templates: (( merge || meta.yagnats_apcera_client_templates ))
@@ -130,9 +123,7 @@ jobs:
     properties:
       networks: (( meta.networks.z1 ))
       nats:
-        machines:
-        - 10.10.81.101
-        - 10.10.19.101
+        machines: (( .properties.nats.z1_machines ))
 
   - name: yagnats_apcera_client_z2
     templates: (( merge || meta.yagnats_apcera_client_templates ))
@@ -144,9 +135,7 @@ jobs:
     properties:
       networks: (( meta.networks.z2 ))
       nats:
-        machines:
-        - 10.10.19.101
-        - 10.10.81.101
+        machines: (( .properties.nats.z2_machines ))
 
 properties:
   population: 6
@@ -163,3 +152,5 @@ properties:
     trace: false
     monitor_port: 0
     prof_port: 0
+    z1_machines: (( jobs.nats_z1.networks.nats1.static_ips jobs.nats_z2.networks.nats2.static_ips ))
+    z2_machines: (( jobs.nats_z2.networks.nats2.static_ips jobs.nats_z1.networks.nats1.static_ips ))
