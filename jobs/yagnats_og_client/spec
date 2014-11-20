@@ -26,5 +26,3 @@ properties:
     description: the nats user
   nats.password:
     description: the nats password
-  socket:
-    default: /var/vcap/data/sys/run/metrics/metrics.sock
