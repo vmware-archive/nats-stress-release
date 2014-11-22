@@ -95,12 +95,12 @@ class Metrics
     Time.now - @last_timestamp
   end
 
-  def rate(bucket)
-    @counts[bucket] / seconds_passed
+  def rate(bucket, counts)
+    counts[bucket] / seconds_passed
   end
 
-  def total(bucket)
-    @totals[bucket]
+  def total(bucket, totals)
+    totals[bucket]
   end
 
   def upload
@@ -112,14 +112,23 @@ class Metrics
       @datadog.emit_point("nats-stress.server-#{uri.host}", uri.host == server ? 1 : 0, host: @name, tags: ["client:#{@client}"])
     end
 
-    @datadog.emit_point("nats-stress.msgs.complete", total(:complete), host: @name, tags: ["client:#{@client}"])
-    @datadog.emit_point("nats-stress.msgs.complete_rate", rate(:complete), host: @name, tags: ["client:#{@client}"])
+    counts = @counts.dup
+    totals = @totals.dup
+    complete_total = total(:complete, totals)
+    complete_rate  = rate(:complete, counts)
+    sent_total     = total(:sent, totals)
+    sent_rate      = rate(:sent, counts)
+    received_total = total(:received, totals)
+    received_rate  = rate(:received, counts)
 
-    @datadog.emit_point("nats-stress.msgs.sent", total(:sent), host: @name, tags: ["client:#{@client}"])
-    @datadog.emit_point("nats-stress.msgs.send_rate", rate(:sent), host: @name, tags: ["client:#{@client}"])
+    @datadog.emit_point("nats-stress.msgs.complete", complete_total, host: @name, tags: ["client:#{@client}"])
+    @datadog.emit_point("nats-stress.msgs.complete_rate", complete_rate, host: @name, tags: ["client:#{@client}"])
 
-    @datadog.emit_point("nats-stress.msgs.received", total(:received), host: @name, tags: ["client:#{@client}"])
-    @datadog.emit_point("nats-stress.msgs.received_rate", rate(:received), host: @name, tags: ["client:#{@client}"])
+    @datadog.emit_point("nats-stress.msgs.sent", sent_total, host: @name, tags: ["client:#{@client}"])
+    @datadog.emit_point("nats-stress.msgs.send_rate", sent_rate, host: @name, tags: ["client:#{@client}"])
+
+    @datadog.emit_point("nats-stress.msgs.received", received_total, host: @name, tags: ["client:#{@client}"])
+    @datadog.emit_point("nats-stress.msgs.received_rate", received_rate, host: @name, tags: ["client:#{@client}"])
 
     @last_timestamp = Time.now
     reset_messages_counter!

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"regexp"
 	"time"
 
 	"github.com/apcera/nats"
@@ -40,7 +39,7 @@ func main() {
 
 	c := &gosteno.Config{
 		Sinks: []gosteno.Sink{
-//			gosteno.NewFileSink("/var/vcap/sys/log/yagnats_apcera_client/yagnats_apcera_client.log"),
+			//			gosteno.NewFileSink("/var/vcap/sys/log/yagnats_apcera_client/yagnats_apcera_client.log"),
 			gosteno.NewFileSink("/tmp/yagnats_apcera_client.log"),
 		},
 		Level:     gosteno.LOG_INFO,
@@ -66,10 +65,10 @@ func main() {
 		if err != nil {
 			logger.Error(err.Error())
 		}
-		if matched, _ := regexp.Match("^publish--", msg.Data); matched {
-			publishMessage := []byte(fmt.Sprintf("received_publish--%s--%s", config.Name, msg.Data))
-			client.Publish("yagnats.apcera.publish", publishMessage)
-		}
+		// if matched, _ := regexp.Match("^publish--", msg.Data); matched {
+		// 	publishMessage := []byte(fmt.Sprintf("received_publish--%s--%s", config.Name, msg.Data))
+		// 	client.Publish("yagnats.apcera.publish", publishMessage)
+		// }
 	})
 
 	count := 0

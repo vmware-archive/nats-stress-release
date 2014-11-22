@@ -15,9 +15,9 @@ class NATSStressor
   def start
     @client.subscribe(">") do |message, reply, subject|
       communicate_metric("received---" + message)
-      if message =~ /^publish--/
-        @client.publish("ruby.publish", "received_publish--#{@name}--#{message}")
-      end
+      # if message =~ /^publish--/
+      #   # @client.publish("ruby.publish", "received_publish--#{@name}--#{message}")
+      # end
     end
   end
 
