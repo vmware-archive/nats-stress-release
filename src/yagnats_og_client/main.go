@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"regexp"
 	"time"
 
 	"github.com/cloudfoundry-incubator/candiedyaml"
@@ -39,7 +38,7 @@ func main() {
 
 	c := &gosteno.Config{
 		Sinks: []gosteno.Sink{
-//			gosteno.NewFileSink("/var/vcap/sys/log/yagnats_og_client/yagnats_og_client.log"),
+			//			gosteno.NewFileSink("/var/vcap/sys/log/yagnats_og_client/yagnats_og_client.log"),
 			gosteno.NewFileSink("/tmp/yagnats_og_client.log"),
 		},
 		Level:     gosteno.LOG_INFO,
@@ -70,10 +69,10 @@ func main() {
 		if err != nil {
 			logger.Error(err.Error())
 		}
-		if matched, _ := regexp.Match("^publish--", msg.Payload); matched {
-			publishMessage := []byte(fmt.Sprintf("received_publish--%s--%s", config.Name, msg.Payload))
-			client.Publish("yagnats.og.publish", publishMessage)
-		}
+		// if matched, _ := regexp.Match("^publish--", msg.Payload); matched {
+		// 	publishMessage := []byte(fmt.Sprintf("received_publish--%s--%s", config.Name, msg.Payload))
+		// 	client.Publish("yagnats.og.publish", publishMessage)
+		// }
 	})
 
 	count := 0

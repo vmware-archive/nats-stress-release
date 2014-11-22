@@ -138,10 +138,10 @@ jobs:
         machines: (( .properties.nats.z2_machines ))
 
 properties:
-  population: 6
+  population: 12
   datadog_api_key: ~
-  publish_interval_in_seconds: 0.1
-  payload_size_in_bytes: 32
+  publish_interval_in_seconds: 0.05
+  payload_size_in_bytes: 300
   nats:
     user: (( merge ))
     password: (( merge ))
