@@ -2,10 +2,12 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/apcera/nats"
@@ -59,6 +61,16 @@ func main() {
 		logger.Error(err.Error())
 		panic(err.Error())
 	}
+
+	client.AddReconnectedCB(func(conn *nats.Conn) {
+		logger.Info(fmt.Sprintf("NATS Client Reconnected. Server URL: %s", conn.Opts.Url))
+	})
+
+	client.AddClosedCB(func(conn *nats.Conn) {
+		err := errors.New(fmt.Sprintf("NATS Client Closed. nats.Conn: %+v", conn))
+		logger.Error(fmt.Sprintf("NATS Closed: %s", err.Error()))
+		os.Exit(1)
+	})
 
 	client.Subscribe(">", func(msg *nats.Msg) {
 		err := communicateMetric([]byte(fmt.Sprintf("received---%s", string(msg.Data))))

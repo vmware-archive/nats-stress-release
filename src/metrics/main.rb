@@ -153,6 +153,8 @@ set :server, :puma
 set :bind, '0.0.0.0'
 set :port, 4568
 
+disable :logging
+
 get '/' do
   'jello world'
 end
