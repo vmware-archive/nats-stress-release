@@ -1,4 +1,4 @@
 github.com/cloudfoundry-incubator/candiedyaml	150e4e8f749b21a7f0de8e3cfd885143fcea6b32
 github.com/cloudfoundry/gosteno	5c1406e9ea0ab919f92e1b194169565def41147b
-github.com/cloudfoundry/yagnats	9b1fa814f3178924914d3d10708c0c775b5cbe4e
-github.com/apcera/nats	fefc40442cc2ffaf016fc5cb59adbe23ef343115
+github.com/cloudfoundry/yagnats	1ac54a8c5bcd394f3904dbad5f4d10fea5241069
+github.com/apcera/nats	4ca550d13b9b6d03b2dded15287a1eae2ae27fa8
