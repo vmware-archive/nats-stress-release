@@ -1,0 +1,12 @@
+---
+name: varz_gnats_datadog
+packages:
+  - ruby-2.1.3
+  - common
+  - varz_gnats_datadog
+templates:
+  varz_gnats_datadog_ctl.erb: bin/varz_gnats_datadog_ctl
+  varz_gnats_datadog.yml.erb: config/varz_gnats_datadog.yml
+properties:
+  datadog_api_key:
+    description:
