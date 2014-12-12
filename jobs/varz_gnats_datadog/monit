@@ -1,0 +1,5 @@
+check process varz_gnats_datadog
+  with pidfile /var/vcap/sys/run/varz_gnats_datadog/varz_gnats_datadog.pid
+  start program "/var/vcap/jobs/varz_gnats_datadog/bin/varz_gnats_datadog_ctl start"
+  stop program "/var/vcap/jobs/varz_gnats_datadog/bin/varz_gnats_datadog_ctl stop"
+  group vcap

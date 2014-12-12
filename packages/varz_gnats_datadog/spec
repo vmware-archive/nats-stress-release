@@ -1,0 +1,6 @@
+---
+name: varz_gnats_datadog
+dependencies:
+- ruby-2.1.3
+files:
+- varz_gnats_datadog/*

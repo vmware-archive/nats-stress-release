@@ -1,0 +1,5 @@
+<% self_ip = spec.networks.send(properties.networks.apps).ip %>
+---
+name: <%= "#{spec.job.name}_#{spec.index.to_s}" %>
+datadog_api_key: <%= p('datadog_api_key') %>
+nats_monitor_uri: "http://<%= self_ip %>:5001"

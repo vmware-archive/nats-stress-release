@@ -1,0 +1,5 @@
+set -e -x
+
+cd ${BUILD_DIR}/varz_gnats_datadog
+bundle install
+BUNDLE_WITHOUT=development:test bundle package --all
