@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"runtime/debug"
 	"time"
 
 	"github.com/apcera/nats"
@@ -35,14 +36,25 @@ type Config struct {
 var config Config
 
 func main() {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in f", r)
+		}
+
+		fmt.Fprintln(os.Stderr, debug.Stack())
+	}()
+
 	var configPath = flag.String("c", "/var/vcap/jobs/yagnats_apcera_client/config/yagnats_apcera_client.yml", "config path")
 	flag.Parse()
 	config = InitConfigFromFile(*configPath)
 
+	fmt.Fprintln(os.Stderr, "DAN YOU CAUSED AN ERROR!!!")
+	fmt.Println("DAN NO ERROR BOO YEAH")
+
 	c := &gosteno.Config{
 		Sinks: []gosteno.Sink{
-			//			gosteno.NewFileSink("/var/vcap/sys/log/yagnats_apcera_client/yagnats_apcera_client.log"),
-			gosteno.NewFileSink("/tmp/yagnats_apcera_client.log"),
+			gosteno.NewFileSink("/var/vcap/sys/log/yagnats_apcera_client/yagnats_apcera_client.log"),
+			//gosteno.NewFileSink("/tmp/yagnats_apcera_client.log"),
 		},
 		Level:     gosteno.LOG_INFO,
 		Codec:     gosteno.NewJsonCodec(),
@@ -63,12 +75,17 @@ func main() {
 	}
 
 	client.AddReconnectedCB(func(conn *nats.Conn) {
+		fmt.Sprintf("NATS Client Reconnected. Server URL: %s\n", conn.Opts.Url)
 		logger.Info(fmt.Sprintf("NATS Client Reconnected. Server URL: %s", conn.Opts.Url))
 	})
 
 	client.AddClosedCB(func(conn *nats.Conn) {
 		err := errors.New(fmt.Sprintf("NATS Client Closed. nats.Conn: %+v", conn))
 		logger.Error(fmt.Sprintf("NATS Closed: %s", err.Error()))
+
+		fmt.Fprintln(os.Stderr, "DAN YOU MESSED UP")
+		fmt.Fprintln(os.Stderr, debug.Stack())
+
 		os.Exit(1)
 	})
 
@@ -89,11 +106,19 @@ func main() {
 		publishMessage := []byte(fmt.Sprintf("publish--%s--%d--", config.Name, count))
 
 		publishMessage = padMessage(publishMessage, config.PayloadSizeInBytes)
-		client.Publish("yagnats.apcera.publish", publishMessage)
+		errP := client.Publish("yagnats.apcera.publish", publishMessage)
+
+		if errP != nil {
+		   fmt.Fprintln(os.Stderr, "Error in publish")
+		   fmt.Fprintln(os.Stderr, errP.Error())
+		   // logger.Error(err.Error())
+		}
+
 		err := communicateMetric([]byte(fmt.Sprintf("sent---%s", string(publishMessage))))
 		if err != nil {
-			logger.Error(err.Error())
+		   logger.Error(err.Error())
 		}
+
 
 		count++
 		time.Sleep(time.Duration(config.PublishIntervalInSeconds * float64(time.Second)))
