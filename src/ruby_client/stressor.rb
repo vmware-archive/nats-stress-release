@@ -7,14 +7,16 @@ class NATSStressor
     @logger = logger
     @name = name
     @payload_size = payload_size
-    @msg_counter = 0
+    @send_counter = 0
+    @recv_counter = 0
     @api_key = api_key
     @storage_file = storage_file
   end
 
   def start
     @client.subscribe(">") do |message, reply, subject|
-      communicate_metric("received---" + message)
+      @recv_counter += 1
+      # communicate_metric("received---" + message)
       # if message =~ /^publish--/
       #   # @client.publish("ruby.publish", "received_publish--#{@name}--#{message}")
       # end
@@ -25,20 +27,19 @@ class NATSStressor
     publish_msg = "publish--#{@name}--#{@msg_counter}--" + "."*@payload_size
 
     @client.publish("ruby.publish", publish_msg)
-    communicate_metric("sent---" + publish_msg)
+    # communicate_metric("sent---" + publish_msg)
 
-    File.write(@storage_file, JSON.pretty_generate(@message_tally))
-    @msg_counter += 1
+    # File.write(@storage_file, JSON.pretty_generate(@message_tally))
+    @send_counter += 1
   end
 
-  private
   def communicate_metric(message)
       http = Net::HTTP.new('127.0.0.1', 4568)
-      request = Net::HTTP::Post.new('/messages')
-      request.body = message
+      request = Net::HTTP::Post.new('/messages-new')
+      request.body = @recv_counter.to_s + ", " + @send_counter.to_s
       http.request(request)
   rescue Errno::ECONNREFUSED => e
     @logger.info("couldn't reach metrics")
-    puts e.backtrace
+    # puts e.backtrace
   end
 end
