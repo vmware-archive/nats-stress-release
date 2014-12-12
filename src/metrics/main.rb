@@ -35,6 +35,14 @@ class Metrics
     @mutex = Mutex.new
   end
 
+  def processes(recv, sent)
+    #puts "!!!!"
+    #puts recv
+    #puts sent
+    message_received!(recv)
+    message_sent!(sent)
+  end
+  
   def process(message)
     if message =~ /^received---received_publish--.*?--publish--#{@name}/
       original_msg = message[/^received---received_publish--(.*?)--(.*)/, 2]
@@ -59,10 +67,10 @@ class Metrics
     @message_tally[message]
   end
 
-  def incr!(bucket)
+  def incr!(bucket, amount)
     @mutex.synchronize do
-      @totals[bucket]  += 1
-      @counts[bucket]  += 1
+      @totals[bucket] += amount
+      @counts[bucket] += amount
     end
   end
 
@@ -74,11 +82,19 @@ class Metrics
   end
 
   def message_sent!
-    incr!(:sent)
+    incr!(:sent, 1)
   end
 
   def message_received!
-    incr!(:received)
+    incr!(:received, 1)
+  end
+
+  def message_sent!(amount)
+    incr!(:sent, amount)
+  end
+
+  def message_received!(amount)
+    incr!(:received, amount)
   end
 
   def reset_messages_counter!
@@ -121,6 +137,10 @@ class Metrics
     received_total = total(:received, totals)
     received_rate  = rate(:received, counts)
 
+    #puts "***"
+    #puts sent_total
+    #puts received_total
+    
     @datadog.emit_point("nats-stress.msgs.complete", complete_total, host: @name, tags: ["client:#{@client}"])
     @datadog.emit_point("nats-stress.msgs.complete_rate", complete_rate, host: @name, tags: ["client:#{@client}"])
 
@@ -141,8 +161,7 @@ end
 conf = YAML.load_file(ARGV[0])
 metrics = Metrics.new(conf)
 
-threads = []
-threads << Thread.new do
+upload_thread = Thread.new do
   loop do
     metrics.upload
     sleep 1
@@ -162,5 +181,12 @@ end
 post '/messages' do
   message = request.body.read
   metrics.process(message)
+  "bye"
+end
+
+post '/messages-new' do
+  message = request.body.read
+  pair = message.split(",")  
+  metrics.processes(pair[0].to_i, pair[1].to_i)
   "bye"
 end
