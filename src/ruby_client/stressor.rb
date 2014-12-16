@@ -36,7 +36,11 @@ class NATSStressor
   def communicate_metric(message)
       http = Net::HTTP.new('127.0.0.1', 4568)
       request = Net::HTTP::Post.new('/messages-new')
-      request.body = @recv_counter.to_s + ", " + @send_counter.to_s
+      recv_copy = @recv_counter.to_s
+      @recv_counter = 0
+      send_copy = @send_counter.to_s
+      @send_counter = 0
+      request.body = recv_copy + ", " + send_copy
       http.request(request)
   rescue Errno::ECONNREFUSED => e
     @logger.info("couldn't reach metrics")
