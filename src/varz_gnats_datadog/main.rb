@@ -63,9 +63,9 @@ loop do
       datadog.emit_point(k,v,host: name)
     end
 
-    p connz
+    # p connz
     conns = connz.delete('connections')
-    p conns
+    # p conns
     connz_top = Lib.new.flat_hash('nats_stress.nats_monitor.conz', connz)
     connz_top.each do |k,v|
       datadog.emit_point(k,v,host: name)
@@ -79,7 +79,7 @@ loop do
     end
   end
 
-  sleep 0.9
+  sleep 0.95
 end
 
 
