@@ -41,7 +41,7 @@ EM.run do
     stressor.perform_interactions
   end
 
-  EM.add_periodic_timer(0.90) do
+  EM.add_periodic_timer(1) do
     stressor.communicate_metric("")
   end
 end
