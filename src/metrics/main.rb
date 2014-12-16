@@ -52,9 +52,9 @@ class Metrics
         message_complete!(message)
       end
     elsif message =~ /^sent---publish--#{@name}/
-      message_sent!
+      message_sent_incr!
     elsif message =~ /^received---publish/
-      message_received!
+      message_received_incr!
     end
   end
 
@@ -81,11 +81,11 @@ class Metrics
     end
   end
 
-  def message_sent!
+  def message_sent_incr!
     incr!(:sent, 1)
   end
 
-  def message_received!
+  def message_received_incr!
     incr!(:received, 1)
   end
 
@@ -164,7 +164,7 @@ metrics = Metrics.new(conf)
 upload_thread = Thread.new do
   loop do
     metrics.upload
-    sleep 1
+    sleep 0.97
   end
 end
 
