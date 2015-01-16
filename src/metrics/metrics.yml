@@ -1,0 +1,6 @@
+---
+storage_file: "/tmp/storage-1.json"
+socket: "/tmp/socketito.sock"
+datadog_api_key: 'YOUR KEY'
+nats_servers:
+  - localhost
