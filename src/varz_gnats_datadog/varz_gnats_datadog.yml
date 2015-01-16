@@ -1,0 +1,4 @@
+---
+datadog_api_key: 'YOUR KEY'
+nats_monitor_uri: 'http://localhost:5000'
+name: 'lonely nats'
