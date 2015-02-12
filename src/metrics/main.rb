@@ -137,9 +137,9 @@ class Metrics
     received_total = total(:received, totals)
     received_rate  = rate(:received, counts)
 
-    #puts "***"
-    #puts sent_total
-    #puts received_total
+    # puts "***"
+    # puts sent_total
+    # puts received_total
     
     @datadog.emit_point("nats-stress.msgs.complete", complete_total, host: @name, tags: ["client:#{@client}"])
     @datadog.emit_point("nats-stress.msgs.complete_rate", complete_rate, host: @name, tags: ["client:#{@client}"])
@@ -164,7 +164,7 @@ metrics = Metrics.new(conf)
 upload_thread = Thread.new do
   loop do
     metrics.upload
-    sleep 0.97
+    sleep 0.98
   end
 end
 

@@ -3,8 +3,8 @@ nats_servers:
   - nats://nats:nats@127.0.0.1:4222
 
 name: "stressor-1"
-publish_interval_in_seconds: 2
-payload_size_in_bytes: 5
-population: 2
+publish_interval_in_seconds: 0.2
+payload_size_in_bytes: 300
+population: 1
 storage_file: "/tmp/storage-1.json"
-socket: "/tmp/socketito.sock"
+# socket: "/tmp/socketito.sock"

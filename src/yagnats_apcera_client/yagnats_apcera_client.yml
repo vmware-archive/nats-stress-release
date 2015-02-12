@@ -5,7 +5,7 @@ nats_servers:
   host: 127.0.0.1
   port: 4222
 
-publish_interval_in_seconds: 2
+publish_interval_in_seconds: 0.2
 name: "yagnats_apcera_client"
 payload_size_in_bytes: 15
 population: 2
