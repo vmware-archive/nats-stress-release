@@ -1,0 +1,35 @@
+---
+director_uuid: c3e3311f-08c9-4809-8083-4aa184fd24da
+properties:
+  datadog_api_key: 222f75804fa0833a975ef87e5d75a8b8
+networks:
+  - name: nats1
+    type: manual
+    subnets:
+      - range: 10.10.211.0/24
+        name: nats_stress1
+        reserved:
+        static:
+          - 10.10.211.12 - 10.10.211.134
+        gateway: 10.10.211.1
+        dns:
+          - 10.10.0.2 # amazon has only 1 DNS server for the whole VPC at x.x.0.2
+        cloud_properties:
+          security_groups:
+            - cf
+          subnet: subnet-889b29d1
+  - name: nats2
+    type: manual
+    subnets:
+      - range: 10.10.212.0/24
+        name: nats_stress2
+        reserved:
+        static:
+          - 10.10.212.12 - 10.10.212.134
+        gateway: 10.10.212.1
+        dns:
+          - 10.10.0.2 # amazon has only 1 DNS server for the whole VPC at x.x.0.2
+        cloud_properties:
+          security_groups:
+            - cf
+          subnet: subnet-931280e4

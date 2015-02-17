@@ -5,7 +5,7 @@ meta:
 
 update:
   canaries: 1
-  max_in_flight: 50
+  max_in_flight: 8
   canary_watch_time: 1000-180000
   update_watch_time: 1000-180000
   serial: true
@@ -69,17 +69,17 @@ jobs:
 compilation:
   cloud_properties:
     instance_type: c3.large
-    availability_zone: us-east-1a
+    availability_zone: us-east-1d
 
 resource_pools:
   - name: medium_z1
     cloud_properties:
       instance_type: m3.medium
-      availability_zone: us-east-1a
+      availability_zone: us-east-1d
 
   - name: medium_z2
     cloud_properties:
       instance_type: m3.medium
-      availability_zone: us-east-1d
+      availability_zone: us-east-1c
 
 networks: (( merge ))

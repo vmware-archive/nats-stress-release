@@ -1,0 +1,277 @@
+compilation:
+  cloud_properties:
+    availability_zone: us-east-1a
+    instance_type: c3.large
+  network: nats1
+  reuse_compilation_vms: true
+  workers: 6
+director_uuid: c3e3311f-08c9-4809-8083-4aa184fd24da
+jobs:
+- instances: 1
+  name: nats_z1
+  networks:
+  - name: nats1
+    static_ips:
+    - 10.10.211.1
+  properties:
+    networks:
+      apps: nats1
+  resource_pool: medium_z1
+  templates:
+  - name: nats
+    release: nats-stress
+  - name: panel
+    release: nats-stress
+- instances: 1
+  name: nats_z2
+  networks:
+  - name: nats2
+    static_ips:
+    - 10.10.212.1
+  properties:
+    networks:
+      apps: nats2
+  resource_pool: medium_z2
+  templates:
+  - name: nats
+    release: nats-stress
+  - name: panel
+    release: nats-stress
+- instances: 12
+  name: ruby_client_z1
+  networks:
+  - name: nats1
+    static_ips:
+    - 10.10.211.2
+    - 10.10.211.3
+    - 10.10.211.4
+    - 10.10.211.5
+    - 10.10.211.14
+    - 10.10.211.15
+    - 10.10.211.16
+    - 10.10.211.6
+    - 10.10.211.7
+    - 10.10.211.8
+    - 10.10.211.9
+    - 10.10.211.17
+  properties:
+    nats:
+      machines:
+      - 10.10.211.1
+      - 10.10.212.1
+    networks:
+      apps: nats1
+  resource_pool: medium_z1
+  templates:
+  - name: ruby_client
+    release: nats-stress
+  - name: metrics
+    release: nats-stress
+  - name: panel
+    release: nats-stress
+- instances: 12
+  name: ruby_client_z2
+  networks:
+  - name: nats2
+    static_ips:
+    - 10.10.212.2
+    - 10.10.212.3
+    - 10.10.212.4
+    - 10.10.212.5
+    - 10.10.212.14
+    - 10.10.212.15
+    - 10.10.212.16
+    - 10.10.212.6
+    - 10.10.212.7
+    - 10.10.212.8
+    - 10.10.212.9
+    - 10.10.212.17
+  properties:
+    nats:
+      machines:
+      - 10.10.212.1
+      - 10.10.211.1
+    networks:
+      apps: nats2
+  resource_pool: medium_z2
+  templates:
+  - name: ruby_client
+    release: nats-stress
+  - name: metrics
+    release: nats-stress
+  - name: panel
+    release: nats-stress
+- instances: 6
+  name: yagnats_apcera_client_z1
+  networks:
+  - name: nats1
+    static_ips:
+    - 10.10.211.10
+    - 10.10.211.11
+    - 10.10.211.12
+    - 10.10.211.13
+    - 10.10.211.20
+    - 10.10.211.21
+  properties:
+    nats:
+      machines:
+      - 10.10.211.1
+      - 10.10.212.1
+    networks:
+      apps: nats1
+  resource_pool: medium_z1
+  templates:
+  - name: yagnats_apcera_client
+    release: nats-stress
+  - name: metrics
+    release: nats-stress
+  - name: panel
+    release: nats-stress
+- instances: 6
+  name: yagnats_apcera_client_z2
+  networks:
+  - name: nats2
+    static_ips:
+    - 10.10.212.10
+    - 10.10.212.11
+    - 10.10.212.12
+    - 10.10.212.13
+    - 10.10.212.20
+    - 10.10.212.21
+  properties:
+    nats:
+      machines:
+      - 10.10.212.1
+      - 10.10.211.1
+    networks:
+      apps: nats2
+  resource_pool: medium_z2
+  templates:
+  - name: yagnats_apcera_client
+    release: nats-stress
+  - name: metrics
+    release: nats-stress
+  - name: panel
+    release: nats-stress
+meta:
+  environment: null
+  nats_templates:
+  - name: nats
+    release: nats-stress
+  - name: panel
+    release: nats-stress
+  networks:
+    z1:
+      apps: nats1
+    z2:
+      apps: nats2
+  release:
+    name: nats-stress
+  ruby_client_templates:
+  - name: ruby_client
+    release: nats-stress
+  - name: metrics
+    release: nats-stress
+  - name: panel
+    release: nats-stress
+  stemcell:
+    name: bosh-aws-xen-ubuntu-trusty-go_agent
+    version: latest
+  yagnats_apcera_client_templates:
+  - name: yagnats_apcera_client
+    release: nats-stress
+  - name: metrics
+    release: nats-stress
+  - name: panel
+    release: nats-stress
+  yagnats_og_client_templates:
+  - name: yagnats_og_client
+    release: nats-stress
+  - name: metrics
+    release: nats-stress
+  - name: panel
+    release: nats-stress
+name: nats-stress
+networks:
+- name: nats1
+  subnets:
+  - cloud_properties:
+      security_groups:
+      - cf
+      subnet: subnet-889b29d1
+    dns:
+    - 10.10.0.2
+    gateway: 10.10.16.1
+    name: default_unused
+    range: 10.10.211.0/24
+    reserved: null
+    static:
+    - 10.10.211.0 - 10.10.211.255
+  type: manual
+- name: nats2
+  subnets:
+  - cloud_properties:
+      security_groups:
+      - cf
+      subnet: subnet-931280e4
+    dns:
+    - 10.10.0.2
+    gateway: 10.10.16.1
+    name: default_unused
+    range: 10.10.212.0/24
+    reserved: null
+    static:
+    - 10.10.212.0 - 10.10.212.255
+  type: manual
+properties:
+  datadog_api_key: null
+  nats:
+    address: 10.10.211.1
+    debug: false
+    machines:
+    - 10.10.211.1
+    - 10.10.212.1
+    monitor_port: 0
+    password: nats
+    port: 4222
+    prof_port: 0
+    trace: false
+    user: nats
+    z1_machines:
+    - 10.10.211.1
+    - 10.10.212.1
+    z2_machines:
+    - 10.10.212.1
+    - 10.10.211.1
+  payload_size_in_bytes: 300
+  population: 12
+  publish_interval_in_seconds: 0.05
+releases:
+- name: nats-stress
+  version: latest
+resource_pools:
+- cloud_properties:
+    availability_zone: us-east-1a
+    instance_type: m3.medium
+  name: medium_z1
+  network: nats1
+  size: 19
+  stemcell:
+    name: bosh-aws-xen-ubuntu-trusty-go_agent
+    version: latest
+- cloud_properties:
+    availability_zone: us-east-1d
+    instance_type: m3.medium
+  name: medium_z2
+  network: nats2
+  size: 19
+  stemcell:
+    name: bosh-aws-xen-ubuntu-trusty-go_agent
+    version: latest
+update:
+  canaries: 1
+  canary_watch_time: 1000-180000
+  max_in_flight: 50
+  serial: true
+  update_watch_time: 1000-180000
+

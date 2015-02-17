@@ -4,7 +4,7 @@ compilation:
   network: nats1
   reuse_compilation_vms: true
   workers: 6
-director_uuid: cf8dc1fc-9c42-4ffc-96f1-fbad983a6ce6
+director_uuid: c3e3311f-08c9-4809-8083-4aa184fd24da
 jobs:
 - instances: 1
   name: nats_z1

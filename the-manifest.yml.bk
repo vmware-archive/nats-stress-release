@@ -1,0 +1,201 @@
+meta:
+  environment: ~
+  release:
+    name: nats-stress
+  stemcell:
+    name: bosh-aws-xen-ubuntu-trusty-go_agent
+    version: latest
+  networks:
+    z1:
+      apps: nats1
+
+    z2:
+      apps: nats2
+  nats_templates:
+  - name: nats
+    release: (( meta.release.name ))
+  - name: panel
+    release: (( meta.release.name ))
+
+  ruby_client_templates:
+  - name: ruby_client
+    release: (( meta.release.name ))
+  - name: metrics
+    release: (( meta.release.name ))
+  - name: panel
+    release: (( meta.release.name ))
+
+  yagnats_og_client_templates:
+  - name: yagnats_og_client
+    release: (( meta.release.name ))
+  - name: metrics
+    release: (( meta.release.name ))
+  - name: panel
+    release: (( meta.release.name ))
+
+  yagnats_apcera_client_templates:
+  - name: yagnats_apcera_client
+    release: (( meta.release.name ))
+  - name: metrics
+    release: (( meta.release.name ))
+  - name: panel
+    release: (( meta.release.name ))
+
+name: nats-stress
+
+director_uuid: c3e3311f-08c9-4809-8083-4aa184fd24da
+
+releases:
+  - name: nats-stress
+    version: latest
+
+networks:
+  - name: nats1
+    type: manual
+    subnets:
+      - range: 10.10.211.0/24
+        name: default_unused #QUESTION
+        reserved:
+        static:
+          - 10.10.211.0 - 10.10.211.255
+        gateway: 10.10.16.1 #QUESTION
+        dns:
+          - 10.10.0.2 # amazon has only 1 DNS server for the whole VPC at x.x.0.2
+        cloud_properties:
+          security_groups:
+            - cf #QUESTION
+          subnet: subnet-889b29d1
+  - name: nats2
+    type: manual
+    subnets:
+      - range: 10.10.212.0/24
+        name: default_unused
+        reserved:
+        static:
+          - 10.10.212.0 - 10.10.212.255
+        gateway: 10.10.16.1
+        dns:
+          - 10.10.0.2 # amazon has only 1 DNS server for the whole VPC at x.x.0.2
+        cloud_properties:
+          security_groups:
+            - cf
+          subnet: subnet-931280e4
+
+properties:
+  population: 12
+  datadog_api_key: ~
+  publish_interval_in_seconds: 0.05
+  payload_size_in_bytes: 300
+  nats:
+    user: nats
+    password: nats
+    address: (( jobs.nats_z1.networks.nats1.static_ips.[0] ))
+    port: 4222
+    machines: (( jobs.nats_z1.networks.nats1.static_ips jobs.nats_z2.networks.nats2.static_ips ))
+    debug: false
+    trace: false
+    monitor_port: 0
+    prof_port: 0
+    z1_machines: (( jobs.nats_z1.networks.nats1.static_ips jobs.nats_z2.networks.nats2.static_ips ))
+    z2_machines: (( jobs.nats_z2.networks.nats2.static_ips jobs.nats_z1.networks.nats1.static_ips ))
+
+jobs:
+  - name: nats_z1
+    templates: (( meta.nats_templates ))
+    instances: 1
+    resource_pool: medium_z1
+    networks:
+      - name: nats1
+        static_ips: (( static_ips(1) ))
+    properties:
+      networks: (( meta.networks.z1 ))
+
+  - name: nats_z2
+    templates: (( meta.nats_templates ))
+    instances: 1
+    resource_pool: medium_z2
+    networks:
+      - name: nats2
+        static_ips: (( static_ips(1) ))
+    properties:
+      networks: (( meta.networks.z2 ))
+
+  - name: ruby_client_z1
+    templates: (( meta.ruby_client_templates ))
+    instances: 12
+    resource_pool: medium_z1
+    networks:
+      - name: nats1
+        static_ips: (( static_ips(2, 3, 4, 5, 14, 15, 16, 6, 7, 8, 9, 17, 18, 19)))
+    properties:
+      networks: (( meta.networks.z1 ))
+      nats:
+        machines: (( .properties.nats.z1_machines ))
+
+  - name: ruby_client_z2
+    templates: (( meta.ruby_client_templates ))
+    instances: 12
+    resource_pool: medium_z2
+    networks:
+      - name: nats2
+        static_ips: (( static_ips(2, 3, 4, 5, 14, 15, 16, 6, 7, 8, 9, 17, 18, 19)))
+    properties:
+      networks: (( meta.networks.z2 ))
+      nats:
+        machines: (( .properties.nats.z2_machines ))
+
+  - name: yagnats_apcera_client_z1
+    templates: (( meta.yagnats_apcera_client_templates ))
+    instances: 6
+    resource_pool: medium_z1
+    networks:
+      - name: nats1
+        static_ips: (( static_ips(10, 11, 12, 13, 20, 21, 22) ))
+    properties:
+      networks: (( meta.networks.z1 ))
+      nats:
+        machines: (( .properties.nats.z1_machines ))
+
+  - name: yagnats_apcera_client_z2
+    templates: (( meta.yagnats_apcera_client_templates ))
+    instances: 6
+    resource_pool: medium_z2
+    networks:
+      - name: nats2
+        static_ips: (( static_ips(10, 11, 12, 13, 20, 21, 22) ))
+    properties:
+      networks: (( meta.networks.z2 ))
+      nats:
+        machines: (( .properties.nats.z2_machines ))
+
+compilation:
+  workers: 6
+  network: nats1
+  reuse_compilation_vms: true
+  cloud_properties:
+    instance_type: c3.large
+    availability_zone: us-east-1a
+
+update:
+  canaries: 1
+  max_in_flight: 50
+  canary_watch_time: 1000-180000
+  update_watch_time: 1000-180000
+  serial: true
+
+resource_pools:
+  - name: medium_z1
+    network: nats1
+    size: (( auto ))
+    stemcell: (( meta.stemcell ))
+    cloud_properties:
+      instance_type: m3.medium
+      availability_zone: us-east-1a
+
+  - name: medium_z2
+    network: nats2
+    size: (( auto ))
+    stemcell: (( meta.stemcell ))
+    cloud_properties:
+      instance_type: m3.medium
+      availability_zone: us-east-1d
