@@ -74,12 +74,22 @@ compilation:
 resource_pools:
   - name: medium_z1
     cloud_properties:
-      instance_type: m3.medium
+      instance_type: c3.large
       availability_zone: us-east-1a
 
   - name: medium_z2
     cloud_properties:
-      instance_type: m3.medium
+      instance_type: c3.large
+      availability_zone: us-east-1d
+
+  - name: gnatsd_z1
+    cloud_properties:
+      instance_type: c3.large
+      availability_zone: us-east-1a
+
+  - name: gnatsd_z2
+    cloud_properties:
+      instance_type: c3.large
       availability_zone: us-east-1d
 
 networks: (( merge ))

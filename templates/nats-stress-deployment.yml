@@ -40,3 +40,15 @@ resource_pools:
     size: (( auto ))
     stemcell: (( meta.stemcell ))
     cloud_properties: (( merge ))
+
+  - name: gnatsd_z1
+    network: nats1
+    size: (( auto ))
+    stemcell: (( meta.stemcell ))
+    cloud_properties: (( merge ))
+
+  - name: gnatsd_z2
+    network: nats2
+    size: (( auto ))
+    stemcell: (( meta.stemcell ))
+    cloud_properties: (( merge ))

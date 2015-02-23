@@ -18,6 +18,8 @@ meta:
     release: (( meta.release.name ))
   - name: panel
     release: (( meta.release.name ))
+  - name: varz_gnats_datadog
+    release: (( meta.release.name ))
 
   ruby_client_templates:
   - name: ruby_client
@@ -47,7 +49,7 @@ jobs:
   - name: nats_z1
     templates: (( merge || meta.nats_templates ))
     instances: 1
-    resource_pool: medium_z1
+    resource_pool: gnatsd_z1
     networks:
       - name: nats1
         static_ips: (( merge ))
@@ -57,7 +59,7 @@ jobs:
   - name: nats_z2
     templates: (( merge || meta.nats_templates ))
     instances: 1
-    resource_pool: medium_z2
+    resource_pool: gnatsd_z2
     networks:
       - name: nats2
         static_ips: (( merge ))
@@ -90,7 +92,7 @@ jobs:
 
   - name: yagnats_og_client_z1
     templates: (( merge || meta.yagnats_og_client_templates ))
-    instances: 1
+    instances: 0
     resource_pool: medium_z1
     networks:
       - name: nats1
@@ -103,7 +105,7 @@ jobs:
 
   - name: yagnats_og_client_z2
     templates: (( merge || meta.yagnats_og_client_templates ))
-    instances: 1
+    instances: 0
     resource_pool: medium_z2
     networks:
       - name: nats2
@@ -138,9 +140,9 @@ jobs:
         machines: (( .properties.nats.z2_machines ))
 
 properties:
-  population: 12
+  population: 36
   datadog_api_key: ~
-  publish_interval_in_seconds: 0.05
+  publish_interval_in_seconds: 0.1
   payload_size_in_bytes: 300
   nats:
     user: (( merge ))
@@ -150,7 +152,7 @@ properties:
     machines: (( jobs.nats_z1.networks.nats1.static_ips jobs.nats_z2.networks.nats2.static_ips ))
     debug: false
     trace: false
-    monitor_port: 0
+    monitor_port: 5001
     prof_port: 0
     z1_machines: (( jobs.nats_z1.networks.nats1.static_ips jobs.nats_z2.networks.nats2.static_ips ))
     z2_machines: (( jobs.nats_z2.networks.nats2.static_ips jobs.nats_z1.networks.nats1.static_ips ))
