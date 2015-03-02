@@ -7,11 +7,11 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"time"
 	"strconv"
-	"sync/atomic"
 	"strings"
-	
+	"sync/atomic"
+	"time"
+
 	"github.com/apcera/nats"
 	"github.com/cloudfoundry-incubator/candiedyaml"
 	"github.com/cloudfoundry/gosteno"
@@ -26,7 +26,7 @@ type NatsInformation struct {
 }
 
 type Config struct {
-	PublishIntervalInSeconds string           `yaml:"publish_interval_in_seconds"`
+	PublishIntervalInSeconds string            `yaml:"publish_interval_in_seconds"`
 	Name                     string            `yaml:"name"`
 	PayloadSizeInBytes       int               `yaml:"payload_size_in_bytes"`
 	NatsServers              []NatsInformation `yaml:"nats_servers"`
@@ -40,14 +40,13 @@ var recvIntervalCount uint64 = 0
 var count int = 0
 
 func main() {
-        var configPath = flag.String("c", "/var/vcap/jobs/yagnats_apcera_client/config/yagnats_apcera_client.yml", "config path")
+	var configPath = flag.String("c", "/var/vcap/jobs/yagnats_apcera_client/config/yagnats_apcera_client.yml", "config path")
 	flag.Parse()
 	config = InitConfigFromFile(*configPath)
 
 	c := &gosteno.Config{
 		Sinks: []gosteno.Sink{
-                        //gosteno.NewFileSink("/var/vcap/sys/log/yagnats_apcera_client/yagnats_apcera_client.log"),
-			gosteno.NewFileSink("/tmp/yagnats_apcera_client.log"),
+			gosteno.NewFileSink("/var/vcap/sys/log/yagnats_apcera_client/yagnats_apcera_client.log"),
 		},
 		Level:     gosteno.LOG_INFO,
 		Codec:     gosteno.NewJsonCodec(),
@@ -79,54 +78,54 @@ func main() {
 	})
 
 	client.Subscribe(">", func(msg *nats.Msg) {
-             	atomic.AddUint64(&recvIntervalCount, 1)
+		atomic.AddUint64(&recvIntervalCount, 1)
 		// if matched, _ := regexp.Match("^publish--", msg.Data); matched {
 		// 	publishMessage := []byte(fmt.Sprintf("received_publish--%s--%s", config.Name, msg.Data))
 		// 	client.Publish("yagnats.apcera.publish", publishMessage)
 		// }
 	})
-        fmt.Fprintln(os.Stderr, "Send")
-        tickSend := time.NewTicker(processDuration(config.PublishIntervalInSeconds + "s"))
+	fmt.Fprintln(os.Stderr, "Send")
+	tickSend := time.NewTicker(processDuration(config.PublishIntervalInSeconds + "s"))
 	fmt.Fprintln(os.Stderr, "Metric")
-        tickMetric := time.NewTicker(processDuration("0.333s"))
-		
-	for {
-	    select {
-	    case <- tickSend.C:
-	        // fmt.Fprintln(os.Stderr, "--> Send")
-	        publishMessage := []byte(fmt.Sprintf("publish--%s--%d--", config.Name, count))
+	tickMetric := time.NewTicker(processDuration("0.333s"))
 
-		publishMessage = padMessage(publishMessage, config.PayloadSizeInBytes)
-		errP := client.Publish("yagnats.apcera.publish", publishMessage)
-             	atomic.AddUint64(&sendIntervalCount, 1)
-		if errP != nil {
-		   logger.Error(err.Error())
+	for {
+		select {
+		case <-tickSend.C:
+			// fmt.Fprintln(os.Stderr, "--> Send")
+			publishMessage := []byte(fmt.Sprintf("publish--%s--%d--", config.Name, count))
+
+			publishMessage = padMessage(publishMessage, config.PayloadSizeInBytes)
+			errP := client.Publish("yagnats.apcera.publish", publishMessage)
+			atomic.AddUint64(&sendIntervalCount, 1)
+			if errP != nil {
+				logger.Error(err.Error())
+			}
+		case <-tickMetric.C:
+			// fmt.Fprintln(os.Stderr, "--> Metric")
+			recvLocal := atomic.SwapUint64(&recvIntervalCount, 0)
+			sendLocal := atomic.SwapUint64(&sendIntervalCount, 0)
+			body := strconv.FormatUint(recvLocal, 10) + ", " + strconv.FormatUint(sendLocal, 10)
+			logger.Info(fmt.Sprintf("Metrics %s", body))
+			resp, err := http.Post("http://127.0.0.1:4568/messages-new", "application/text", strings.NewReader(body))
+			resp.Body.Close()
+			if err != nil {
+				logger.Error(err.Error())
+			}
 		}
-	    case <- tickMetric.C:
-	        // fmt.Fprintln(os.Stderr, "--> Metric")
-		recvLocal := atomic.SwapUint64(&recvIntervalCount, 0)
-		sendLocal := atomic.SwapUint64(&sendIntervalCount, 0)
-		body := strconv.FormatUint(recvLocal, 10) + ", " + strconv.FormatUint(sendLocal, 10)
-		logger.Info(fmt.Sprintf("Metrics %s", body))
-		resp, err := http.Post("http://127.0.0.1:4568/messages-new", "application/text", strings.NewReader(body))
-		resp.Body.Close()
-		if err != nil {
-		   logger.Error(err.Error())
-		}
-	    }
 	}
 }
 
 func processDuration(input string) time.Duration {
-        metricDuration, err := time.ParseDuration(input)
-        if err != nil {
-	    fmt.Fprintln(os.Stderr, "Duration Fault", err.Error())
+	metricDuration, err := time.ParseDuration(input)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Duration Fault", err.Error())
 		os.Exit(1)
-        }
-        fmt.Fprintln(os.Stderr, "Duration", metricDuration)
-        return metricDuration
+	}
+	fmt.Fprintln(os.Stderr, "Duration", metricDuration)
+	return metricDuration
 }
-  
+
 func padMessage(message []byte, paddingLength int) []byte {
 	if len(message) < paddingLength {
 		a := make([]byte, paddingLength)
@@ -144,8 +143,8 @@ func InitConfigFromFile(path string) Config {
 	c := Config{}
 
 	b, e := ioutil.ReadFile(path)
-    if e != nil {
-	    panic(e.Error())
+	if e != nil {
+		panic(e.Error())
 	}
 
 	e = c.Initialize(b)
